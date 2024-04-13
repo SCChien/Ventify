@@ -108,18 +108,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <input type="text" placeholder="Search...">
                 </li>
 
+
                 <ul class="menu-links">
                     <li class="nav-link">
-                        <a href="#">
+                        <a href="showphp.php">
                             <i class='bx bx-home-alt icon' ></i>
-                            <span class="text nav-text">Dashboard</span>
+                            <span class="text nav-text">showphp</span>
                         </a>
                     </li>
 
                     <li class="nav-link">
-                        <a href="#">
+                        <a href="userpfp.php">
                             <i class='bx bx-bar-chart-alt-2 icon' ></i>
-                            <span class="text nav-text">Revenue</span>
+                            <span class="text nav-text">userpfp</span>
                         </a>
                     </li>
 
