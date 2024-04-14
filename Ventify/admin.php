@@ -77,199 +77,184 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <link rel="stylesheet" href="css\style.css">
-
-    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<nav class="sidebar close">
-        <header>
-            <div class="image-text">
-                <span class="image">
-                    <!--<img src="logo.png" alt="">-->
-                </span>
-
-                <div class="text logo-text">
-                    <span class="name">Codinglab</span>
-                    <span class="profession">Web developer</span>
-                </div>
-            </div>
-
-            <i class='bx bx-chevron-right toggle'></i>
-        </header>
-
-        <div class="menu-bar">
-            <div class="menu">
-
-                <li class="search-box">
-                    <i class='bx bx-search icon'></i>
-                    <input type="text" placeholder="Search...">
-                </li>
-
-
-                <ul class="menu-links">
-                    <li class="nav-link">
-                        <a href="showphp.php">
-                            <i class='bx bx-home-alt icon' ></i>
-                            <span class="text nav-text">showphp</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="userpfp.php">
-                            <i class='bx bx-bar-chart-alt-2 icon' ></i>
-                            <span class="text nav-text">userpfp</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-bell icon'></i>
-                            <span class="text nav-text">Notifications</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-pie-chart-alt icon' ></i>
-                            <span class="text nav-text">Analytics</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-heart icon' ></i>
-                            <span class="text nav-text">Likes</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-wallet icon' ></i>
-                            <span class="text nav-text">Wallets</span>
-                        </a>
-                    </li>
-
-                </ul>
-            </div>
-
-            <div class="bottom-content">
-                <li class="">
-                    <a href="#">
-                        <i class='bx bx-log-out icon' ></i>
-                        <span class="text nav-text">Logout</span>
+    <div id="viewport">
+        <!-- 侧边栏 -->
+        <div id="sidebar">
+            <header>
+                <a href="#">我的应用</a>
+            </header>
+            <ul class="nav">
+                <li>
+                    <a href="#" data-target="dashboard">
+                        仪表盘
                     </a>
                 </li>
-
-                <li class="mode">
-                    <div class="sun-moon">
-                        <i class='bx bx-moon icon moon'></i>
-                        <i class='bx bx-sun icon sun'></i>
-                    </div>
-                    <span class="mode-text text">Dark mode</span>
-
-                    <div class="toggle-switch">
-                        <span class="switch"></span>
-                    </div>
+                <li>
+                    <a href="#" data-target="delete">
+                        快捷方式
+                    </a>
                 </li>
-                
+                <li>
+                    <a href="#" data-target="overview">
+                        概览
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-target="events">
+                        事件
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-target="about">
+                        关于
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-target="services">
+                        服务
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-target="contact">
+                        联系我们
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- 内容区域 -->
+        <div id="content">
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                    <h2>Admin Panel</h2>
+                    </div>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#">
+                                <i class="fas fa-user"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">测试用户</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="container-fluid">
+                <div id="dashboard" class="page">
+                    <h1>Edit User Information</h1>
+                    <!-- Update Password Form -->
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <label for="user_id_password">User ID:</label>
+                        <input type="number" id="user_id_password" name="user_id" required>
+                        <br>
+                        <label for="new_password">New Password:</label>
+                        <input type="password" id="new_password" name="new_password">
+                        <br>
+                        <input type="submit" name="update_password" value="Update Password">
+                    </form>
+                    <!-- Update Email Form -->
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <label for="user_id_email">User ID:</label>
+                        <input type="number" id="user_id_email" name="user_id" required>
+                        <br>
+                        <label for="new_email">New Email:</label>
+                        <input type="email" id="new_email" name="new_email">
+                        <br>
+                        <input type="submit" name="update_email" value="Update Email">
+                    </form>
+                    <!-- Update Telephone Form -->
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <label for="user_id_telephone">User ID:</label>
+                        <input type="number" id="user_id_telephone" name="user_id" required>
+                        <br>
+                        <label for="new_telephone">New Telephone:</label>
+                        <input type="text" id="new_telephone" name="new_telephone">
+                        <br>
+                        <input type="submit" name="update_telephone" value="Update Telephone">
+                    </form>
+                </div>
+                <div id="delete" class="page">
+                    <h1>Delete User</h1>
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <label for="delete_user_id">User ID to Delete:</label>
+                        <input type="number" id="delete_user_id" name="user_id" required>
+                        <br>
+                        <input type="submit" name="delete" value="Delete">
+                    </form>
+                </div>
+                <div id="overview" class="page">
+                    <h1>All Users</h1>
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <input type="hidden" name="show_users" value="true">
+                        <button type="submit">Show Users</button>
+                    </form>
+                    <!-- Display users if the button is clicked -->
+                     <?php
+                    // Include the database connection file
+                    include('conn.php');
+                    // Check if the button is clicked
+                    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["show_users"])) {
+                        // Fetch all users from the database
+                        $sql = "SELECT * FROM users";
+                        $result = $conn->query($sql);
+                    
+                        // Output users as a table
+                        echo "<table border='1'>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Password</th>
+                                    <th>Telephone</th>
+                                    <th>Email</th>
+                                </tr>";
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . $row['id'] . "</td>";
+                            echo "<td>" . $row['username'] . "</td>";
+                            echo "<td>" . $row['password'] . "</td>";
+                            echo "<td>" . $row['telephone'] . "</td>";
+                            echo "<td>" . $row['email'] . "</td>";
+                            echo "</tr>";
+                        }
+                        echo "</table>";
+                    
+                        // Close the connection
+                        $conn->close();
+                    }
+                    ?>
+                    
+                </div>
+                <div id="events" class="page">
+                    <h1>事件内容</h1>
+                    <p>这是事件的内容。</p>
+                </div>
+                <div id="about" class="page">
+                    <h1>关于内容</h1>
+                    <p>这是关于的内容。</p>
+                </div>
+                <div id="services" class="page">
+                    <h1>服务内容</h1>
+                    <p>这是服务的内容。</p>
+                </div>
+                <div id="contact" class="page">
+                    <h1>联系我们内容</h1>
+                    <p>这是联系我们的内容。</p>
+                </div>
             </div>
         </div>
+    </div>
 
-</nav>
-    
-<section class="home">
-        <div class="text">
-        <h2>Admin Panel</h2>
-
-        <h3>Edit User Information</h3>
-
-        <!-- Update Password Form -->
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <label for="user_id_password">User ID:</label>
-            <input type="number" id="user_id_password" name="user_id" required>
-            <br>
-            <label for="new_password">New Password:</label>
-            <input type="password" id="new_password" name="new_password">
-            <br>
-            <input type="submit" name="update_password" value="Update Password">
-        </form>
-
-        <!-- Update Email Form -->
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <label for="user_id_email">User ID:</label>
-            <input type="number" id="user_id_email" name="user_id" required>
-            <br>
-            <label for="new_email">New Email:</label>
-            <input type="email" id="new_email" name="new_email">
-            <br>
-            <input type="submit" name="update_email" value="Update Email">
-        </form>
-
-        <!-- Update Telephone Form -->
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <label for="user_id_telephone">User ID:</label>
-            <input type="number" id="user_id_telephone" name="user_id" required>
-            <br>
-            <label for="new_telephone">New Telephone:</label>
-            <input type="text" id="new_telephone" name="new_telephone">
-            <br>
-            <input type="submit" name="update_telephone" value="Update Telephone">
-        </form>
-
-        <h3>Delete User</h3>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <label for="delete_user_id">User ID to Delete:</label>
-            <input type="number" id="delete_user_id" name="user_id" required>
-            <br>
-            <input type="submit" name="delete" value="Delete">
-        </form>
-
-        <h3>All Users</h3>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-        <input type="hidden" name="show_users" value="true">
-        <button type="submit">Show Users</button>
-    </form>
-
-    <!-- Display users if the button is clicked -->
-    <?php
-    // Include the database connection file
-    include('conn.php');
-
-    // Check if the button is clicked
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["show_users"])) {
-        // Fetch all users from the database
-        $sql = "SELECT * FROM users";
-        $result = $conn->query($sql);
-
-        // Output users as a table
-        echo "<table border='1'>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Password</th>
-                    <th>Telephone</th>
-                    <th>Email</th>
-                </tr>";
-        while ($row = $result->fetch_assoc()) {
-            echo "<tr>";
-            echo "<td>" . $row['id'] . "</td>";
-            echo "<td>" . $row['username'] . "</td>";
-            echo "<td>" . $row['password'] . "</td>";
-            echo "<td>" . $row['telephone'] . "</td>";
-            echo "<td>" . $row['email'] . "</td>";
-            echo "</tr>";
-        }
-        echo "</table>";
-
-        // Close the connection
-        $conn->close();
-    }
-    ?>
-        </div>
-</section>
-<script src="./js/admin_test.js"></script>
+<script src="./js/script.js"></script>
 </body>
 </html>

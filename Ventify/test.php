@@ -1,3 +1,5 @@
+<!-- 这是用户上传头像和显示头像 -->
+
 <?php
 // 包含数据库连接文件
 include('conn.php');
@@ -11,7 +13,7 @@ function handleLogin($username, $password, $conn) {
         $user = $result->fetch_assoc();
         // 保存用户ID到SESSION中
         session_start();
-        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_id'] = $user['id']; // 使用'id'字段
         $_SESSION['avatar_path'] = $user['avatar_path']; // 保存头像路径到Session
         echo "登录成功！";
     } else {
@@ -26,7 +28,7 @@ function uploadAvatar($avatarPath, $conn) {
     $userId = $_SESSION['user_id'];
 
     // 更新用户的头像路径
-    $updateSql = "UPDATE users SET avatar_path = '$avatarPath' WHERE id = $userId";
+    $updateSql = "UPDATE users SET avatar_path = '$avatarPath' WHERE id = $userId"; // 使用'id'字段
     if ($conn->query($updateSql) === TRUE) {
         $_SESSION['avatar_path'] = $avatarPath; // 更新Session中的头像路径
         echo "头像上传成功！";

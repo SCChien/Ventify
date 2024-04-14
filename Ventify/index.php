@@ -1,10 +1,39 @@
+<!-- 添加了特定用户登入时会显示特定用户的头像和username利用username获取用户id再用id获取头像 -->
+
+
+<?php
+session_start();
+
+include('conn.php');
+
+if(isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+
+    $id_query = "SELECT id, avatar_path FROM users WHERE username = '$username'";
+    $id_result = $conn->query($id_query);
+
+    if ($id_result->num_rows == 1) {
+        // Fetch the user's ID and avatar path
+        $row = $id_result->fetch_assoc();
+        $user_id = $row['id'];
+        $avatarPath = $row['avatar_path'];
+    } else {
+        $avatarPath = 'default_avatar.jpg';
+    }
+} else {
+    header("Location: login.php");
+    exit();
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ventify</title>
+    <title>IKULA</title>
     <link rel="icon" href="image/logo.ico" type="image/x-icon">
     <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./css/font_header.css">
@@ -14,7 +43,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- header -->
+        <!-- 头部 -->
         <div class="header">
             <div class="logo">
                 <img src="./image/logo.png" alt="">
@@ -33,12 +62,13 @@
 
 
             <div class="other">
-               <div class="userInfo">
-                <a href="login.php"><img src="./image/ningzi.jpg" alt="a"><span>铃木武月</span></a>  
-               </div>
+                <div class="userInfo">
+                    <img src="<?php echo $avatarPath; ?>" alt="<?php echo $username; ?>">
+                    <span><?php echo $username; ?></span>
+                </div>
                 <ul>
-                    <li><i class="iconfont icon-zhuti"></i></li>
-                    <li><i class="iconfont icon-shezhi"></i></li>
+                    <li><a href="login.php"><i class="iconfont icon-zhuti"></i></a></li>
+                    <li><a href="test.php"><i class="iconfont icon-shezhi"></i></a></li>
                     <li><i class="iconfont icon-xinfeng"></i></li>
                     <li class="vertical_bar"></li>
                     <li><i class="iconfont icon-MINIMIZE"></i></li>
@@ -46,6 +76,7 @@
                     <li><i class="iconfont icon-zuidahua"></i></li>
                     <li><i class="iconfont icon-guanbi"></i></li>
                 </ul>
+        
             </div>
         </div>
 
@@ -56,12 +87,12 @@
         <div class="main">
             <div class="left-box">
                 <ul>
-                    <li><span>Discover</span></li>
-                    <li><span>Blog</span></li>
-                    <li><span>Video</span></li>
-                    <li><span>Follow</span></li>
-                    <li><span>Live</span></li>
-                    <li><span>Personal FM</span></li>
+                    <li><span>发现音乐</span></li>
+                    <li><span>播客</span></li>
+                    <li><span>视频</span></li>
+                    <li><span>关注</span></li>
+                    <li><span>直播</span></li>
+                    <li><span>私人FM</span></li>
                 </ul>
                 <div class="my_music">
                     <span>我的音乐</span>
@@ -184,7 +215,7 @@
             </div>
 
             <ul class="ft_right">
-                <li class="jigao">Extreme</li>
+                <li class="jigao">极高</li>
                 <li class="iconfont icon-yinxiao"></li>
                 <li class="iconfont icon-yinliangkai _voice"></li>
                 <li class="iconfont icon-yiqipindan"></li>

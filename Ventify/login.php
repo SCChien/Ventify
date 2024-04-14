@@ -1,3 +1,7 @@
+<!-- 登入/注册系统 -->
+
+
+
 <?php
 session_start();
 
@@ -5,13 +9,14 @@ session_start();
 include('conn.php');
 
 $success_message = "";
+$error_message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if the form is a registration form
     if (isset($_POST["reg_username"]) && isset($_POST["reg_password"]) && isset($_POST["telephone"]) && isset($_POST["email"])) {
         // Registration process
         $reg_username = $_POST["reg_username"];
-        $reg_password = $_POST["reg_password"];
+        $reg_password = $_POST["reg_password"]; // Store password as plain text
         $telephone = $_POST["telephone"];
         $email = $_POST["email"];
 
@@ -22,13 +27,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($check_result->num_rows == 0) {
             // Insert new user into the database
             $insert_query = "INSERT INTO users (username, password, telephone, email) VALUES ('$reg_username', '$reg_password', '$telephone', '$email')";
-            $conn->query($insert_query);
-
-            // Set success message for registration
-            $success_message = "Registration successful!";
+            if ($conn->query($insert_query) === TRUE) {
+                // Set success message for registration
+                $success_message = "Registration successful!";
+            } else {
+                // Display an error message for database error
+                $error_message = "Error: " . $conn->error;
+            }
         } else {
             // Display an error message for duplicate username
-            echo "Username already taken. Please choose another username.";
+            $error_message = "Username already taken. Please choose another username.";
         }
     } else {
         // Check if the form is a login form
@@ -36,15 +44,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Login process
             $username = $_POST["username"];
             $password = $_POST["password"];
-             header("Location:home.html");
-
-            // Check if admin credentials
             if ($username === "venti" && $password === "0214") {
                 // Redirect to admin.php
                 header("Location: admin.php");
                 exit();
             }
-
             // Check credentials using the database
             $query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
             $result = $conn->query($query);
@@ -55,28 +59,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Set success message for login
                 $success_message = "Login successful!";
+                // Redirect user to index.php
+                header("Location: index.php");
+                exit(); // Ensure that script execution stops after redirection
+
             } else {
                 // Display an error message for invalid credentials
-                echo "Invalid username or password";
+                $error_message = "Invalid username or password";
             }
         }
     }
 }
 ?>
 
+
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-    <link rel="stylesheet" href="./css/test_login.css">
+    <link rel="stylesheet" href="./css/login.css">
 </head>
-
 <body>
-    <div class="container">
+<div class="container">
         <div class="register-box">
             <h2 class="register-title">
                 <span>No Have，Go</span>Register
@@ -117,7 +123,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </div>
-    <script src="./js/test_login.js"></script>
+    <div>
+    <a href="index.html">
+    <p>
+    </a>
+    </div>
+    <script src="./js/login.js"></script>
 </body>
-
 </html>
