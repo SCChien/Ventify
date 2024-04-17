@@ -39,6 +39,7 @@ if(isset($_SESSION['username'])) {
     <link rel="stylesheet" href="./css/font_header.css">
     <link rel="stylesheet" href="./css/font_leftBox.css">
     <link rel="stylesheet" href="css/font_footer.css">
+    <link rel="stylesheet" href="css/song_lyrics.css">
     
 </head>
 <body>
@@ -223,6 +224,24 @@ if(isset($_SESSION['username'])) {
             </ul>
         </div>
     </div>
+    <div class="lyrics-section" style="display: none;">
+        <div class="lyrics-overlay"></div>
+            <div class="lyrics-content">
+                <div class="song-details">
+                    <img src="./image/logo.png" alt="Song Photo">
+                    <div class="details-text">
+                        <h2>Artist Name</h2>
+                        <p>Song Name</p>
+                    </div>
+                </div>
+                <div class="song-lyrics">
+                    <h2>Song Lyrics</h2>
+                    <p class="lyrics">These are the song lyrics.</p>
+                </div>
+            </div>
+        </div>
+
     <script src="./js/listen.js"></script>
+    <<script src="./js/song_lycris.js"></script>
 </body>
 </html>
