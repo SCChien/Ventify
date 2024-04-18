@@ -214,5 +214,3 @@ function updateImage(index) {
     // Update the image source
     image.src = `./image/main/${imageList[index]}.jpg`;
 }
-
-

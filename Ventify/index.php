@@ -69,7 +69,7 @@ if(isset($_SESSION['username'])) {
                 </div>
                 <ul>
                     <li><a href="login.php"><i class="iconfont icon-zhuti"></i></a></li>
-                    <li><a href="test.php"><i class="iconfont icon-shezhi"></i></a></li>
+                    <li><a href="userpfp.php"><i class="iconfont icon-shezhi"></i></a></li>
                     <li><i class="iconfont icon-xinfeng"></i></li>
                     <li class="vertical_bar"></li>
                     <li><i class="iconfont icon-MINIMIZE"></i></li>
@@ -128,35 +128,25 @@ if(isset($_SESSION['username'])) {
                     <li><span>歌手</span></li></li>
                     <li><span>最新音乐</span></li>
                 </ul> 
-                <div class="banner">
-                    <div class="infomation">
-                        <h4>M♭</h4>
-                        <p>&nbsp;&nbsp;&nbsp;&nbsp;M♭是TV动画《路人女主的养成方法》03话14:51时的插曲，同时也是加藤惠的角色歌，收录在同名角色歌专辑中（冴えない彼女の育てかたキャラクターイメージソング加藤恵）。由其声优：安野希世乃演唱。
-                        </p>
-                        <div class="btn_listen btn_listen_1">
-                            <span>点击试听</span>
-                        </div>
-                        <div class="btn_listen btn_listen_2">
-                            <span>点击收藏</span>
-                        </div>
+                <div class="banner" id="bannerbox">
+                    <ul class="lunbotu" id="lunbotu">
+                        <li class="img_left"><img src="./image/lunbo/3.jpg" alt=""></li>
+                        <li class="img_center"><img src="./image/lunbo/1.jpg" alt=""></li>
+                        <li class="img_right"><img src="./image/lunbo/2.jpg" alt=""></li>
+                    </ul>
+                    <!-- 左右箭头 -->
+                    <i class="iconfont icon-jiantou-xiangzuo btn pre" id="prebtn"></i>
+                    <i class="iconfont icon-jiantou-xiangyou btn next" id="nextbtn"></i>
+                    <div class="dot">
+                        <ul id="dotbox">
+                            <li class="select_dot"></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                        </ul>
                     </div>
-                    <img src="./image/qwe.jpg" alt="">
                 </div>
 
-                <div class="dot">
-                    <ul class="dots">
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                    </ul>
-                </div>
 
                 <div class="recm_list">
                     <div class="recm_word">推荐歌曲<i class="iconfont icon-jiantou-xiangyou"></i></div>
@@ -217,13 +207,22 @@ if(isset($_SESSION['username'])) {
 
             <ul class="ft_right">
                 <li class="jigao">极高</li>
-                <li class="iconfont icon-yinxiao"></li>
-                <li class="iconfont icon-yinliangkai _voice"></li>
+                <a href="#" id="addToPlaylist"><li class="iconfont icon-yinxiao"></li></a>
+                <li class="iconfont icon-yinliangkai _voice"></li><!---when click at this button the song will at into playlist--->
                 <li class="iconfont icon-yiqipindan"></li>
                 <li class="iconfont icon-24gl-playlistMusic"></li>
             </ul>
         </div>
     </div>
+    <!-- Place this div anywhere within the body tag -->
+    <div id="successMessage" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
+        Song added to playlist successfully.
+    </div>
+    <div id="errorMessage" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
+    Song already exists in the playlist.
+    </div>
+
+
     <div class="lyrics-section" style="display: none;">
         <div class="lyrics-overlay"></div>
             <div class="lyrics-content">
@@ -242,6 +241,48 @@ if(isset($_SESSION['username'])) {
         </div>
 
     <script src="./js/listen.js"></script>
-    <<script src="./js/song_lycris.js"></script>
+    <script src="./js/song_lycris.js"></script>
+    <script src="./js/changeStyle.js"></script>
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Add event listener to the anchor tag
+    document.getElementById("addToPlaylist").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default anchor behavior
+
+        // Get the song details
+        var songName = document.querySelector(".songName").textContent.trim();
+        var singer = document.querySelector(".singer").textContent.trim();
+
+        // Send AJAX request to PHP script
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "add_to_playlist.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Handle the response
+                var response = xhr.responseText.trim();
+                if (response === "Song added to playlist successfully.") {
+                    // Show success message
+                    document.getElementById("successMessage").innerText = response;
+                    document.getElementById("successMessage").style.display = "block";
+                    // Hide success message after 3 seconds
+                    setTimeout(function() {
+                        document.getElementById("successMessage").style.display = "none";
+                    }, 3000);
+                } else {
+                    // Show error message
+                    document.getElementById("errorMessage").innerText = response;
+                    document.getElementById("errorMessage").style.display = "block";
+                    // Hide error message after 3 seconds
+                    setTimeout(function() {
+                        document.getElementById("errorMessage").style.display = "none";
+                    }, 3000);
+                }
+            }
+        };
+        xhr.send("songName=" + encodeURIComponent(songName) + "&singer=" + encodeURIComponent(singer));
+    });
+});
+</script>
 </body>
 </html>
