@@ -1,22 +1,27 @@
+body {
+    background-color: brown;
+}
+
 .container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-
 }
 
 .profile-box {
+    position: absolute;
     width: 750px;
     height: 463px;
     border-radius: 20px;
-    background-color: white;
-    position: relative;
+    background-color: #E3E5E8;
+    top: 50%; /* Push the top of the box down to the middle of the page */
+    left: 50%; /* Push the left of the box to the middle of the page */
+    transform: translate(-50%, -50%); /* Center the box horizontally and vertically */
 }
 
 .banner {
     position: absolute;
-    background:url(https://cdn.pfps.gg/banners/1055-my-banner-of-my-gf-named-frostfrog-in-anime-pov.png);
+    background-image: url(https://cdn.discordapp.com/attachments/1193982715557593109/1230559595341287504/0419.jpg?ex=6633c2ee&is=66214dee&hm=c4012a060915caa68d0801bfd93614cf38216b65a958a98ec601a32d37733388&);
     background-size: cover;
     background-position: center;
     width: 100%;
@@ -31,7 +36,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    background-color: blueviolet;
+    background-color: #E3E5E8;
     width: 100%;
 }
 
@@ -68,7 +73,7 @@
 
 .button button {
     padding: 10px 20px;
-    background-color: #4CAF50;
+    background-color: #4752c4;
     color: white;
     border: none;
     border-radius: 5px;
@@ -76,9 +81,9 @@
 }
 
 .info {
-    background-color: #888;
-    border: 1px solid;
+    background-color: #F2F3F5;
     position: absolute;
+    border-radius: 20px;
     top: 195px; /* Adjusted value for more space */
     display: flex;
     flex-direction: column;
@@ -150,28 +155,3 @@
     cursor: pointer;
 }
 
-/* Style for the playlist box */
-.playlist {
-    margin-top: 20px; /* Adjust as needed */
-    padding: 20px;
-    background-color: #f0f0f0; /* Change the background color as desired */
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a shadow effect */
-    clear: both; /* Ensure it clears both the profile picture and user info */
-}
-
-/* Style for the playlist heading */
-.playlist h2 {
-    font-size: 1.5em; /* Adjust the font size as needed */
-    margin-bottom: 10px; /* Add space below the heading */
-}
-
-/* Style for the playlist items */
-.playlist ul {
-    list-style-type: none; /* Remove bullet points */
-    padding: 0;
-}
-
-.playlist ul li {
-    margin-bottom: 5px; /* Add space between playlist items */
-}

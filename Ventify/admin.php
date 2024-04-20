@@ -2,7 +2,7 @@
 session_start();
 
 // Include the database connection file
-include('conn.php');
+include('./core/conn.php');
 
 // Function to update password
 function updatePassword($conn, $userId, $newPassword) {
@@ -112,7 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </li>
                 <li>
                     <a href="#" data-target="events">
-                        事件
+                        Upload Music
                     </a>
                 </li>
                 <li>
@@ -203,7 +203,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <!-- Display users if the button is clicked -->
                      <?php
                     // Include the database connection file
-                    include('conn.php');
+                    include('./core/conn.php');
                     // Check if the button is clicked
                     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["show_users"])) {
                         // Fetch all users from the database
@@ -237,8 +237,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     
                 </div>
                 <div id="events" class="page">
-                    <h1>事件内容</h1>
-                    <p>这是事件的内容。</p>
+                <h1>Upload Music</h1>
+                    <form action="upload.php" method="post" enctype="multipart/form-data">
+                        <label for="music_name">Music Name:</label>
+                        <input type="text" name="music_name" id="music_name" required><br>
+
+                        <label for="artist">Artist:</label>
+                        <input type="text" name="artist" id="artist" required><br>
+
+                        <label for="category">Category:</label>
+                        <input type="text" name="category" id="category" required><br>
+
+                        <input type="file" name="music_file" accept=".mp3" required><br>
+
+                        <button type="submit" name="submit">Upload</button>
+                    </form>
                 </div>
                 <div id="about" class="page">
                     <h1>关于内容</h1>

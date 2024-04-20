@@ -1,12 +1,8 @@
-<!-- 登入/注册系统 -->
-
-
-
 <?php
 session_start();
 
 // Include the database connection file
-include('conn.php');
+include('./core/conn.php');
 
 $success_message = "";
 $error_message = "";

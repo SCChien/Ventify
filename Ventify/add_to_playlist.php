@@ -1,13 +1,15 @@
 <?php
 session_start();
-
-include('conn.php');
+include('./core/conn.php');
 
 if(isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
 
-    $id_query = "SELECT id FROM users WHERE username = '$username'";
-    $id_result = $conn->query($id_query);
+    $id_query = "SELECT id FROM users WHERE username = ?";
+    $stmt = $conn->prepare($id_query);
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $id_result = $stmt->get_result();
 
     if ($id_result->num_rows == 1) {
         $row = $id_result->fetch_assoc();
@@ -69,7 +71,7 @@ if(isset($_SESSION['username'])) {
                 }
 
                 // Encode the updated playlist data as JSON
-                $jsonPlaylistData =json_encode($playlistData, JSON_PRETTY_PRINT);
+                $jsonPlaylistData = json_encode($playlistData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
                 // Write the updated playlist data back to the file
                 file_put_contents($playlistFile, $jsonPlaylistData);

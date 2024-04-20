@@ -4,24 +4,24 @@
 <?php
 session_start();
 
-include('conn.php');
+include('./core/conn.php');
 
 if(isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
 
-    $id_query = "SELECT id, avatar_path FROM users WHERE username = '$username'";
+    $id_query = "SELECT id, pfp FROM users WHERE username = '$username'";
     $id_result = $conn->query($id_query);
 
     if ($id_result->num_rows == 1) {
         // Fetch the user's ID and avatar path
         $row = $id_result->fetch_assoc();
         $user_id = $row['id'];
-        $avatarPath = $row['avatar_path'];
+        $avatarPath = $row['pfp'];
     } else {
         $avatarPath = 'default_avatar.jpg';
     }
 } else {
-    header("Location: login.php");
+    header("Location:login.php");
     exit();
 }
 ?>
@@ -58,7 +58,7 @@ if(isset($_SESSION['username'])) {
                     <i class="iconfont icon-sousuo"></i>
                     <input type="text" placeholder="搜索">
                 </div>
-                <i class="iconfont icon-mic-on"></i>
+                <i class="iconfont icon-mic-on"><a href="searchmusic.php">here</a></i>
             </div>
 
 
@@ -70,12 +70,7 @@ if(isset($_SESSION['username'])) {
                 <ul>
                     <li><a href="login.php"><i class="iconfont icon-zhuti"></i></a></li>
                     <li><a href="userpfp.php"><i class="iconfont icon-shezhi"></i></a></li>
-                    <li><i class="iconfont icon-xinfeng"></i></li>
-                    <li class="vertical_bar"></li>
-                    <li><i class="iconfont icon-MINIMIZE"></i></li>
-                    <li><i class="iconfont icon-zuixiaohua"></i></li>
-                    <li><i class="iconfont icon-zuidahua"></i></li>
-                    <li><i class="iconfont icon-guanbi"></i></li>
+                    <li><a href="premium.php"><i class="iconfont icon-xinfeng"></i></a></li>
                 </ul>
         
             </div>

@@ -4,10 +4,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     telephone VARCHAR(20),
     email VARCHAR(100),
-    avatar_path VARCHAR(255);
+    pfp VARCHAR(255);
+    role VARCHAR(255)
 );
-
-/** New table **/
-
-ALTER TABLE users ADD COLUMN avatar_path VARCHAR(255);
 

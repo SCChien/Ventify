@@ -1,20 +1,20 @@
 <?php
 session_start();
-include('conn.php');
+include('./core/conn.php');
 
 // Check if the user is logged in
 if(isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
 
     // Retrieve user information from the database
-    $user_query = "SELECT id, avatar_path, telephone, email FROM users WHERE username = '$username'";
+    $user_query = "SELECT id, pfp, telephone, email FROM users WHERE username = '$username'";
     $user_result = $conn->query($user_query);
 
     if ($user_result->num_rows == 1) {
         // Fetch the user's information
         $row = $user_result->fetch_assoc();
         $user_id = $row['id'];
-        $avatarPath = $row['avatar_path'];
+        $avatarPath = $row['pfp'];
         $telephone = $row['telephone'];
         $email = $row['email'];
     } else {
@@ -101,9 +101,6 @@ if(isset($_SESSION['username'])) {
             </div>
         </div>
     </div>
-
-
-        
             <div class="info">
                 <div class="username1">Name:
                     <div class="username2"><?php echo $username; ?></div>
@@ -117,18 +114,6 @@ if(isset($_SESSION['username'])) {
                 <div class="userPhone">Phone:
                     <div class="userPhone2"><?php echo $telephone; ?></div>
                 </div>
-                <div class="playlist">
-                <h2>Playlist</h2>
-                <ul>
-                    <?php if ($userPlaylist): ?>
-                        <?php foreach ($userPlaylist as $song): ?>
-                            <li><?php echo htmlspecialchars($song['songName']); ?> - <?php echo htmlspecialchars($song['artistName']); ?></li>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <li>No songs in playlist.</li>
-                    <?php endif; ?>
-                </ul>
-            </div>
             </div>
 
             <!-- Display user's playlist -->
