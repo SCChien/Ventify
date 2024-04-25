@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Send AJAX request to PHP script
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "add_to_playlist.php", true);
+        xhr.open("POST", "add_toPlaylist_test.php", true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4 && xhr.status === 200) {

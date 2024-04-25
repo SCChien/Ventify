@@ -40,16 +40,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Login process
             $username = $_POST["username"];
             $password = $_POST["password"];
+
+            // Check if user is "venti" and password is "0214"
             if ($username === "venti" && $password === "0214") {
+                // Set session for venti
+                $_SESSION["username"] = $username;
                 // Redirect to admin.php
-                header("Location: admin.php");
+                header("Location: superadmin.php");
                 exit();
             }
-            // Check credentials using the database
-            $query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
-            $result = $conn->query($query);
 
-            if ($result->num_rows > 0) {
+            // Check credentials using the database for users
+            $user_query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+            $user_result = $conn->query($user_query);
+
+            if ($user_result->num_rows > 0) {
                 // Start a session and store the username
                 $_SESSION["username"] = $username;
 
@@ -58,10 +63,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Redirect user to index.php
                 header("Location: index.php");
                 exit(); // Ensure that script execution stops after redirection
-
             } else {
-                // Display an error message for invalid credentials
-                $error_message = "Invalid username or password";
+                // Check credentials using the database for admins
+                $admin_query = "SELECT * FROM admin WHERE username = '$username' AND password = '$password'";
+                echo "Admin Query: $admin_query<br>"; // Debug statement
+                $admin_result = $conn->query($admin_query);
+                
+                if ($admin_result) {
+                    echo "Admin Result Rows: " . $admin_result->num_rows . "<br>"; // Debug statement
+                    if ($admin_result->num_rows > 0) {
+                        // Start a session and store the username
+                        $_SESSION["username"] = $username;
+                
+                        // Set success message for login
+                        $success_message = "Login successful!";
+                        // Redirect admin to admin.php
+                        header("Location: admin.php");
+                        exit(); // Ensure that script execution stops after redirection
+                    } else {
+                        // Display an error message for invalid credentials
+                        $error_message = "Invalid username or password for admin";
+                    }
+                } else {
+                    // Display an error message for database error
+                    $error_message = "Database error: " . $conn->error;
+                }
             }
         }
     }

@@ -112,7 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </li>
                 <li>
                     <a href="#" data-target="events">
-                        Upload Music
+                        事件
                     </a>
                 </li>
                 <li>
@@ -196,49 +196,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div id="overview" class="page">
                     <h1>All Users</h1>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                        <input type="hidden" name="show_users" value="true">
-                        <button type="submit">Show Users</button>
+                    <form action="#" method="post">
+                        <button id="showUsersBtn" type="submit">Show Users</button>
+                        <div id="userList" style="display: none;"></div>
                     </form>
-                    <!-- Display users if the button is clicked -->
-                     <?php
-                    // Include the database connection file
-                    include('./core/conn.php');
-                    // Check if the button is clicked
-                    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["show_users"])) {
-                        // Fetch all users from the database
-                        $sql = "SELECT * FROM users";
-                        $result = $conn->query($sql);
-                    
-                        // Output users as a table
-                        echo "<table border='1'>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Username</th>
-                                    <th>Password</th>
-                                    <th>Telephone</th>
-                                    <th>Email</th>
-                                </tr>";
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<tr>";
-                            echo "<td>" . $row['id'] . "</td>";
-                            echo "<td>" . $row['username'] . "</td>";
-                            echo "<td>" . $row['password'] . "</td>";
-                            echo "<td>" . $row['telephone'] . "</td>";
-                            echo "<td>" . $row['email'] . "</td>";
-                            echo "</tr>";
-                        }
-                        echo "</table>";
-                    
-                        // Close the connection
-                        $conn->close();
-                    }
-                    ?>
-                    
                 </div>
                 <div id="events" class="page">
                 <h1>Upload Music</h1>
-                    <form action="upload.php" method="post" enctype="multipart/form-data">
+                    <form action="upload_music.php" method="post" enctype="multipart/form-data">
                         <label for="music_name">Music Name:</label>
                         <input type="text" name="music_name" id="music_name" required><br>
 
