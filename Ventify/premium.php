@@ -113,6 +113,5 @@ if(isset($_SESSION['username'])) {
   </div>
 </section>
 <!-- partial -->
-  
 </body>
 </html>

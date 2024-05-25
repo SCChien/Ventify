@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     // Add click event listener to ft_left div
-    document.querySelector('.ft_left').addEventListener('click', function() {
+    document.querySelector('.icon-geciweidianji').addEventListener('click', function() {
         var lyricsSection = document.querySelector('.lyrics-section');
         // Toggle visibility of the lyrics section
         if (lyricsSection.classList.contains('slide-in')) {

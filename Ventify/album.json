@@ -1,0 +1,33 @@
+{
+    "kelvin": {
+        "username": "kelvin",
+        "albums": {
+            "darren": [
+                "asd, asd",
+                "aaa, aaa"
+            ],
+            "test": [
+                "asd, asd"
+            ]
+        }
+    },
+    "john_doe": {
+        "username": "john_doe",
+        "albums": {
+            "test2": [
+                "asdasd, aaaa",
+                "123, 456"
+            ],
+            "asdas": [
+                "sss, sss"
+            ]
+        }
+    },
+    "venti": {
+        "username": "venti",
+        "albums": {
+            "qwe": [],
+            "wer": []
+        }
+    }
+}

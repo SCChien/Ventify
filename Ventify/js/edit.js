@@ -38,3 +38,12 @@ function showPopup() {
 function closePopup() {
     document.getElementById("editProfilePopup").style.display = "none";
 }
+
+
+function showPopup() {
+    document.getElementById('editProfilePopup').style.display = 'block';
+}
+
+function closePopup() {
+    document.getElementById('editProfilePopup').style.display = 'none';
+}

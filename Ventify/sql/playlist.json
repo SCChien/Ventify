@@ -1,0 +1,32 @@
+[
+    {
+        "songs": [
+            {
+                "songName": "群青",
+                "artistName": "YOASOBI"
+            },
+            {
+                "songName": "夜に駆ける",
+                "artistName": "YOASOBI"
+            },
+            {
+                "songName": "Call your name",
+                "artistName": "李阿亚"
+            },
+            {
+                "songName": "万疆",
+                "artistName": "李玉刚"
+            }
+        ],
+        "username": "dgyt"
+    },
+    {
+        "songs": [
+            {
+                "songName": "春夏秋冬reprise",
+                "artistName": "當山みれい"
+            }
+        ],
+        "username": "test1"
+    }
+]

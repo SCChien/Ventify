@@ -1,6 +1,3 @@
-<!-- 添加了特定用户登入时会显示特定用户的头像和username利用username获取用户id再用id获取头像 -->
-
-
 <?php
 session_start();
 
@@ -9,14 +6,18 @@ include('./core/conn.php');
 if(isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
 
-    $id_query = "SELECT id, pfp FROM users WHERE username = '$username'";
+    $id_query = "SELECT id, pfp, role FROM users WHERE username = '$username'";
     $id_result = $conn->query($id_query);
 
     if ($id_result->num_rows == 1) {
-        // Fetch the user's ID and avatar path
+        // Fetch the user's ID, avatar path, and role
         $row = $id_result->fetch_assoc();
         $user_id = $row['id'];
         $avatarPath = $row['pfp'];
+        $userRole = $row['role'];
+
+        // Send the user's role to the frontend
+        echo "<script>var userRole = '$userRole';</script>";
     } else {
         $avatarPath = 'default_avatar.jpg';
     }
@@ -25,7 +26,6 @@ if(isset($_SESSION['username'])) {
     exit();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +40,6 @@ if(isset($_SESSION['username'])) {
     <link rel="stylesheet" href="./css/font_leftBox.css">
     <link rel="stylesheet" href="css/font_footer.css">
     <link rel="stylesheet" href="css/song_lyrics.css">
-    
 </head>
 <body>
     <div class="container">
@@ -55,10 +54,8 @@ if(isset($_SESSION['username'])) {
                 <i class="iconfont icon-jiantou-xiangzuo"></i>
                 <i class="iconfont icon-jiantou-xiangyou"></i>
                 <div class="search">
-                    <i class="iconfont icon-sousuo"></i>
-                    <input type="text" placeholder="搜索">
+                    <i class="iconfont icon-sousuo"><a href="searchmusic.php">Search</a></i>
                 </div>
-                <i class="iconfont icon-mic-on"><a href="searchmusic.php">here</a></i>
             </div>
 
 
@@ -83,7 +80,7 @@ if(isset($_SESSION['username'])) {
         <div class="main">
             <div class="left-box">
                 <ul>
-                    <li><span>发现音乐</span></li>
+                    <li><span>Explore Music</span></li>
                     <li><span>播客</span></li>
                     <li><span>视频</span></li>
                     <li><span>关注</span></li>
@@ -94,11 +91,9 @@ if(isset($_SESSION['username'])) {
                     <span>我的音乐</span>
                 </div>
                 <ul class="mine">
-                    <li><i class="iconfont icon-bendixiazai"></i><span>本地与下载</span></li>
-                    <li><i class="iconfont icon-zuijinbofang"></i><span>最近播放</span></li>
-                    <li><i class="iconfont icon-yun"></i><span>我的音乐云盘</span></li>
-                    <li><i class="iconfont icon-boke1"></i><span>我的播客</span></li>
-                    <li><i class="iconfont icon-ego-favorite"></i><span>我的收藏</span></li>
+                    <li><i class="iconfont icon-bendixiazai"></i><span>Downloaded Song</span></li>
+                    <li><i class="iconfont icon-zuijinbofang"></i><span>History</span></li>
+                    <li><i class="iconfont icon-ego-favorite"></i><span>Collection</span></li>
                 </ul>
                 <div class="create_list">
                     <span>
@@ -116,12 +111,11 @@ if(isset($_SESSION['username'])) {
             </div>
             <div class="right-box">
                 <ul class="navigation">
-                    <li class="active"><span>个性推荐</span></li>
-                    <li><span>专属定制</span></li>
-                    <li><span>歌单</span></li>
-                    <li><span>排行榜</span></li>
-                    <li><span>歌手</span></li></li>
-                    <li><span>最新音乐</span></li>
+                    <li class="active"><span>Home</span></li>
+                    <li><span>Recommend Song</span></li>
+                    <li><a href="playlist.php"><span>Album Playlist</span></a></li>
+                    <li><span>Best of Song</span></li>
+                    <li><a href="singer.php"><span>Singer</span></a></li></li>
                 </ul> 
                 <div class="banner" id="bannerbox">
                     <ul class="lunbotu" id="lunbotu">
@@ -209,15 +203,6 @@ if(isset($_SESSION['username'])) {
             </ul>
         </div>
     </div>
-    <!-- Place this div anywhere within the body tag -->
-    <div id="successMessage" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
-        Song added to playlist successfully.
-    </div>
-    <div id="errorMessage" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
-    Song already exists in the playlist.
-    </div>
-
-
     <div class="lyrics-section" style="display: none;">
         <div class="lyrics-overlay"></div>
             <div class="lyrics-content">
@@ -238,46 +223,6 @@ if(isset($_SESSION['username'])) {
     <script src="./js/listen.js"></script>
     <script src="./js/song_lycris.js"></script>
     <script src="./js/changeStyle.js"></script>
-    <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Add event listener to the anchor tag
-    document.getElementById("addToPlaylist").addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent default anchor behavior
-
-        // Get the song details
-        var songName = document.querySelector(".songName").textContent.trim();
-        var singer = document.querySelector(".singer").textContent.trim();
-
-        // Send AJAX request to PHP script
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "add_toPlaylist_test.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                // Handle the response
-                var response = xhr.responseText.trim();
-                if (response === "Song added to playlist successfully.") {
-                    // Show success message
-                    document.getElementById("successMessage").innerText = response;
-                    document.getElementById("successMessage").style.display = "block";
-                    // Hide success message after 3 seconds
-                    setTimeout(function() {
-                        document.getElementById("successMessage").style.display = "none";
-                    }, 3000);
-                } else {
-                    // Show error message
-                    document.getElementById("errorMessage").innerText = response;
-                    document.getElementById("errorMessage").style.display = "block";
-                    // Hide error message after 3 seconds
-                    setTimeout(function() {
-                        document.getElementById("errorMessage").style.display = "none";
-                    }, 3000);
-                }
-            }
-        };
-        xhr.send("songName=" + encodeURIComponent(songName) + "&singer=" + encodeURIComponent(singer));
-    });
-});
-</script>
+    <script src="./js/playlist.js"></script>
 </body>
 </html>

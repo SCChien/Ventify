@@ -24,4 +24,4 @@ if __name__ == '__main__':
     song_name = ' '.join(sys.argv[1:])
     file_name = download_music(song_name)
     # 确保这里只输出文件名
-    print(file_name)  
+    print(file_name)

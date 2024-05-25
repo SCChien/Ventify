@@ -20,27 +20,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'description' => 'Ventify Premium Individual',
             'source' => 'tok_visa', // token for test
         ]);
-
+    
         $username = $_SESSION['username'];
-
-        $sql = "UPDATE users SET role='VIP Individual' WHERE username='$username'";
-
-        if ($conn->query($sql) === TRUE) {
-            echo "Payment successful! You are now a VIP member.";
+    
+        // Update user's role
+        $sql_update_role = "UPDATE users SET role='VIP Individual' WHERE username='$username'";
+        if ($conn->query($sql_update_role) === TRUE) {
+            // Insert payment record
+            $sql_insert_payment = "INSERT INTO payment (user_id, amount) VALUES ((SELECT id FROM users WHERE username='$username'), 3)";
+            if ($conn->query($sql_insert_payment) === TRUE) {
+                echo "Payment successful! You are now a VIP member.";
+            } else {
+                echo "Error inserting payment record: " . $conn->error;
+            }
         } else {
-            echo "Error updating record: " . $conn->error;
+            echo "Error updating user's role: " . $conn->error;
         }
     } catch (\Stripe\Exception\CardException $e) {
         echo 'Payment failed. ' . $e->getError()->message;
-    }
+    }    
 }
-
 $conn->close();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="./css/payment.css"> 
     <title>Stripe Example</title>
     <meta charset="UTF-8" />
 </head>

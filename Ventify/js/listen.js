@@ -167,7 +167,7 @@ const songs = [
     'audio/Call your name.mp3',
     'audio/lo1.mp3',
     'audio/wanjiang.mp3',
-    // Add more songs as needed
+    'audio/novipuser.mp3'
 ];
 
 // Track the index of the current song
@@ -182,7 +182,23 @@ function playNextSong() {
     // Update the artist, singer, and image
     updateArtistAndSinger(currentSongIndex);
     updateImage(currentSongIndex);
+
+    // Check the user's role and play additional audio if necessary
+    if (userRole !== 'VIP Family,VIP Individual,VIP Student') {
+    audio.onended = function() {
+        audio.src = "Ventify/audio/novipuser.mp3";
+        audio.play().catch(function(error) {
+            console.error('Error playing novipuser.mp3:', error);
+        });
+    }
+
+    // Add error event listener
+    audio.onerror = function(event) {
+        console.error('Audio error:', event);
+    };
 }
+}
+
 
 // Add event listener to the next song button
 nextSongButton.addEventListener('click', playNextSong);

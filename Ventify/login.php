@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Set session for venti
                 $_SESSION["username"] = $username;
                 // Redirect to admin.php
-                header("Location: superadmin.php");
+                header("Location: admin.php");
                 exit();
             }
 
@@ -85,7 +85,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $error_message = "Invalid username or password for admin";
                     }
                 } else {
-                    // Display an error message for database error
                     $error_message = "Database error: " . $conn->error;
                 }
             }
@@ -108,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="container">
         <div class="register-box">
             <h2 class="register-title">
-                <span>No Have，Go</span>Register
+                <span>No Have,Go</span>Register
             </h2>
             <?php
             if (!empty($success_message) && isset($_POST["reg_username"])) {
@@ -142,6 +141,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="password" id="password" name="password" required placeholder="Password">
                     </div>
                     <button type="submit" value="Login">Login</button>
+                    <p><a href ="email.php">Forget Password?</a></p>
                 </form>
             </div>
         </div>

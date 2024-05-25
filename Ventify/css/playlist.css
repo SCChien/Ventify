@@ -1,0 +1,175 @@
+.playlist {
+    padding: 20px;
+}
+
+.album h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Form styles */
+.playlist form {
+    margin-bottom: 20px;
+}
+
+.playlist label {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.playlist select {
+    padding: 5px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.playlist input[type="submit"] {
+    padding: 5px 10px;
+    font-size: 16px;
+    background-color: #28282a;
+    border: none;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+.playlist input[type="submit"]:hover {
+    background-color: #868a87;
+}
+
+/* Table styles */
+.playlist table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    color: #FFFFFF;
+}
+
+.playlist thead {
+    background-color: #282828;
+}
+
+.playlist thead th {
+    padding: 10px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: normal;
+    border-bottom: 1px solid #333;
+}
+
+.playlist tbody tr {
+    border-bottom: 1px solid #333;
+}
+
+.playlist tbody tr:nth-child(even) {
+    background-color: #181818;
+}
+
+.playlist tbody td {
+    padding: 10px;
+    font-size: 14px;
+}
+
+.playlist tbody td:first-child {
+    width: 30px;
+}
+
+.playlist tbody td:last-child {
+    width: 200px; /* Adjust width to your needs */
+}
+
+/* H3 styles for playlist title */
+.playlist h3 {
+    font-size: 20px;
+    margin-top: 0;
+    color: #FFFFFF;
+}
+
+/* Hover effects for table rows */
+.playlist tbody tr:hover {
+    background-color: #333;
+}
+
+/* General popup window styles */
+.popupWindow {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 999; /* Sit on top */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px; /* Adjust to your needs */
+    padding: 20px;
+    background-color: #1e1e1e; /* Dark background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    color: #FFFFFF; /* Light text */
+}
+
+/* Close button styles */
+.popupWindow .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #FFFFFF; /* White color */
+}
+
+/* Form header styles */
+.popupWindow h3 {
+    margin-top: 0;
+    font-size: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+/* Form label styles */
+.popupWindow label {
+    display: block;
+    margin: 10px 0 5px;
+    font-size: 14px;
+}
+
+/* Form input styles */
+.popupWindow input[type="text"],
+.popupWindow select {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+    background-color: #2e2e2e; /* Slightly lighter background */
+    color: #FFFFFF;
+    border-radius: 4px;
+}
+
+/* Form submit button styles */
+.popupWindow input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #1DB954; /* Spotify green for contrast */
+    border: none;
+    color: #FFFFFF;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.popupWindow input[type="submit"]:hover {
+    background-color: #1ed760;
+}
+
+/* Overlay effect */
+.popupOverlay {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 998; /* Sit below popup */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Black with transparency */
+}
+
+/* Active state for showing the popup */
+.popupWindow.active,
+.popupOverlay.active {
+    display: block;
+}

@@ -17,37 +17,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $charge = \Stripe\Charge::create([
             'amount' => 200, 
             'currency' => 'MYR',
-            'description' => 'Ventify Premium Individual',
+            'description' => 'Ventify Premium Student',
             'source' => 'tok_visa', // token for test
         ]);
-
         $username = $_SESSION['username'];
 
-        $sql = "UPDATE users SET role='VIP Student' WHERE username='$username'";
-
-        if ($conn->query($sql) === TRUE) {
-            echo "Payment successful! You are now a VIP member.";
-        } else {
-            echo "Error updating record: " . $conn->error;
-        }
-    } catch (\Stripe\Exception\CardException $e) {
-        echo 'Payment failed. ' . $e->getError()->message;
-    }
+       // Update user's role
+       $sql_update_role = "UPDATE users SET role='VIP Student' WHERE username='$username'";
+       if ($conn->query($sql_update_role) === TRUE) {
+           // Insert payment record
+           $sql_insert_payment = "INSERT INTO payment (user_id, amount) VALUES ((SELECT id FROM users WHERE username='$username'), 2)";
+           if ($conn->query($sql_insert_payment) === TRUE) {
+               echo "Payment successful! You are now a VIP member.";
+           } else {
+               echo "Error inserting payment record: " . $conn->error;
+           }
+       } else {
+           echo "Error updating user's role: " . $conn->error;
+       }
+   } catch (\Stripe\Exception\CardException $e) {
+       echo 'Payment failed. ' . $e->getError()->message;
+   }    
 }
-
 $conn->close();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="./css/payment.css">
     <title>Stripe Example</title>
     <meta charset="UTF-8" />
 </head>
 <body>
 
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-    <p>Ventify Premium Individual</p>
+    <p>Ventify Premium Student</p>
     <p><strong>MYR 2</strong></p>
     <div>
         <label for="card-number">Card Number:</label>
