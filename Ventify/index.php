@@ -80,7 +80,7 @@ if(isset($_SESSION['username'])) {
         <div class="main">
             <div class="left-box">
                 <ul>
-                    <li><span>Explore Music</span></li>
+                    <li><span>Explore Music</span></a></li>
                     <li><span>播客</span></li>
                     <li><span>视频</span></li>
                     <li><span>关注</span></li>
@@ -117,24 +117,6 @@ if(isset($_SESSION['username'])) {
                     <li><span>Best of Song</span></li>
                     <li><a href="singer.php"><span>Singer</span></a></li></li>
                 </ul> 
-                <div class="banner" id="bannerbox">
-                    <ul class="lunbotu" id="lunbotu">
-                        <li class="img_left"><img src="./image/lunbo/3.jpg" alt=""></li>
-                        <li class="img_center"><img src="./image/lunbo/1.jpg" alt=""></li>
-                        <li class="img_right"><img src="./image/lunbo/2.jpg" alt=""></li>
-                    </ul>
-                    <!-- 左右箭头 -->
-                    <i class="iconfont icon-jiantou-xiangzuo btn pre" id="prebtn"></i>
-                    <i class="iconfont icon-jiantou-xiangyou btn next" id="nextbtn"></i>
-                    <div class="dot">
-                        <ul id="dotbox">
-                            <li class="select_dot"></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                        </ul>
-                    </div>
-                </div>
 
 
                 <div class="recm_list">
@@ -164,6 +146,8 @@ if(isset($_SESSION['username'])) {
                 </div>
             </div>
         </div>
+
+        
 
         <!-- 底部 -->   
         <div class="footer">
@@ -203,6 +187,15 @@ if(isset($_SESSION['username'])) {
             </ul>
         </div>
     </div>
+    <!-- Place this div anywhere within the body tag -->
+    <div id="successMessage" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
+        Song added to playlist successfully.
+    </div>
+    <div id="errorMessage" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
+    Song already exists in the playlist.
+    </div>
+
+
     <div class="lyrics-section" style="display: none;">
         <div class="lyrics-overlay"></div>
             <div class="lyrics-content">
@@ -223,6 +216,46 @@ if(isset($_SESSION['username'])) {
     <script src="./js/listen.js"></script>
     <script src="./js/song_lycris.js"></script>
     <script src="./js/changeStyle.js"></script>
-    <script src="./js/playlist.js"></script>
+    <script>
+document.addEventListener("DOMContentLoaded",   () {
+    // Add event listener to the anchor tag
+    document.getElementById("addToPlaylist").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default anchor behavior
+
+        // Get the song details
+        var songName = document.querySelector(".songName").textContent.trim();
+        var singer = document.querySelector(".singer").textContent.trim();
+
+        // Send AJAX request to PHP script
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "add_to_playlist.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Handle the response
+                var response = xhr.responseText.trim();
+                if (response === "Song added to playlist successfully.") {
+                    // Show success message
+                    document.getElementById("successMessage").innerText = response;
+                    document.getElementById("successMessage").style.display = "block";
+                    // Hide success message after 3 seconds
+                    setTimeout(function() {
+                        document.getElementById("successMessage").style.display = "none";
+                    }, 3000);                           
+                } else {
+                    // Show error message
+                    document.getElementById("errorMessage").innerText = response;
+                    document.getElementById("errorMessage").style.display = "block";
+                    // Hide error message after 3 seconds
+                    setTimeout(function() {
+                        document.getElementById("errorMessage").style.display = "none";
+                    }, 3000);
+                }
+            }
+        };
+        xhr.send("songName=" + encodeURIComponent(songName) + "&singer=" + encodeURIComponent(singer));
+    });
+});
+</script>
 </body>
 </html>

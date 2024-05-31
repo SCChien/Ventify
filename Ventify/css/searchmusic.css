@@ -1,0 +1,381 @@
+/* 修改后的公共样式 */
+*{
+    padding: 0;
+    margin: 0;
+}
+
+li{
+    list-style: none;
+    cursor: pointer;
+}
+
+img,span{
+    user-select: none;
+    cursor: pointer;
+}
+
+a{
+    text-decoration: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-image: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%);
+    background-size: cover; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* 设置高度为视口高度 */
+}
+
+.container {
+    width: 100%; /* 填充视口宽度 */
+    max-width: 2000px; /* 设置最大宽度 */
+    height: 100%; /* 填充视口高度 */
+    overflow: hidden; /* 防止整个页面出现滚动条 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 头部样式 */
+.header {
+    width: 100%;
+    height: 60px;
+    background-color: #323235;
+    display: flex;
+    position: relative;
+}
+
+.header i {
+    color: #AFAFAF;
+    display: block;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.header .logo {
+    display: flex;
+    height: 100%;
+    width: 175px;
+    align-items: center;
+    margin-left: 25px;
+    user-select: none;
+}
+
+.logo img {
+    width: 30px;
+    height: 30px;
+}
+
+.logo span {
+    display: block;
+    font-size: 20px;
+    color: #fff;
+    margin-left: 10px;
+}
+
+.header .middle {
+    height: 100%;
+    display: flex;
+    align-items: center; 
+    margin-left: 20px;
+}
+
+.middle .search {
+    height: 20px;
+    background-color: #434346;
+    display: flex;
+    align-items: center;
+    border-radius: 30px;
+    padding: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+} 
+
+.search input {
+    background-color: transparent;
+    border: 0;
+    height: 15px;
+    line-height: 15px;
+    width: 130px;
+    outline: none !important;
+    color: #fff;
+    margin-left: 5px;
+}
+
+.other {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 500px;
+    margin-left: 80px;
+}
+
+.other .userInfo {
+    display: flex;
+    align-items: center;
+}
+
+.other .userInfo img {
+    margin-right: 10px;
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+}
+
+.other .userInfo span {
+    color: #adadad;
+    font-size: 13px;
+}
+
+.other ul {
+    position: absolute;
+    right: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.other ul .vertical_bar {
+    width: 1px;
+    height: 20px;
+    background-color: #464648;
+}
+
+.other ul li{
+    margin-left: 20px;
+}
+
+/* 渐变线条样式 */
+.line {
+    width: 100%;
+    height: 1px;
+    background-image: linear-gradient(120deg, #fccb90 0%, red 50%, #d57eeb 100%);
+}
+
+/* 中间内容样式 */
+.main {
+    width: 100%;
+    height: calc(100% - 129px); /* 减去 header 和 footer 的高度 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: auto; /* 允许中间部分滚动 */
+}
+
+/* 搜索框样式 */
+.search-box {
+    background-color: #434343;
+    width: 50%;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.search-box h2 {
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.search-box .search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-bar input {
+    background-color: #434346;
+    border: 1px solid #5a5a5a;
+    height: 40px;
+    line-height: 40px;
+    width: 60%;
+    outline: none !important;
+    color: #fff;
+    padding: 0 10px;
+    border-radius: 20px;
+    margin-right: 10px;
+}
+
+.search-bar button {
+    background-color: #ec4141;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.search-bar button:hover {
+    background-color: #ff5757;
+}
+
+/* 底部样式 */
+.footer {
+    border-top: 1px #686868 solid;
+    height: 68px;
+    background-color: #343437;
+    display: flex;
+    position: relative;
+    width: 100%;
+}
+
+.footer .ft_left {
+    width: 220px;
+    display: flex;
+    align-items: center;
+}
+
+.ft_left img {
+    width: 55px;
+    margin-left: 5px;
+    border-radius: 5px;
+}
+
+.ft_left .songNameAndSinger {
+    color: #fff;
+    font-size: 14px;
+    margin-left: 10px;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.songNameAndSinger i {
+    margin-left: 8px;
+}
+
+.songNameAndSinger span.singer {
+    font-size: 10px;
+}
+
+.footer .ft_main {
+    width: 550px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    position: relative;
+    margin: 0 auto;
+}
+
+.tool_list {
+    width: 40%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 30px;
+}
+
+.tool_list li {
+    cursor: pointer;
+}
+
+.tool_list li i {
+    color: #d4d4d4;
+    font-size: 20px;
+}
+
+.tool_list li:nth-child(3) i {
+    font-size: 30px;
+}
+
+.ft_main .progress {
+    position: relative;
+    width: 60%;
+    height: 2px;
+    background-color: grey;
+}
+
+.progress .slide {
+    position: absolute;
+    top: -1.6px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #ec4141;
+    z-index: 9;
+}
+
+.progress .fill {
+    position: absolute;
+    top: 0;
+    height: 2px;
+    background-color: #ec4141;
+}
+
+.time {
+    color: #fff;
+    font-size: 10px;
+    position: absolute;
+    cursor: default;
+}
+
+.ft_main .currentTime {
+    top: -8px;
+    left: -37px;
+}
+
+.ft_main .duraTime {
+    top: -8px;
+    right: -40px;
+}
+
+.footer .ft_right {
+    width: 250px;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.ft_right .jigao {
+    font-size: 14px;
+    color: red;
+    border: red 2px solid;
+    line-height: 100%;
+    padding: 2px;
+    border-radius: 4px;
+    user-select: none;
+}
+
+.ft_right .iconfont {
+    color: #d4d4d4;
+    font-size: 20px;
+}
+
+#downloadedSongsContainer {
+    display: none;
+    position: fixed;
+    right: 16px;
+    top: 60px; /* 确保列表开始于header下方 */
+    bottom: 68px; /* 确保列表停留在footer上方 */
+    width: 300px;
+    max-height: calc(100vh - 128px); /* 视窗高度减去 header 和 footer 的高度 */
+    background-color: #434343; /* 和搜索框的背景颜色一致 */
+    color: #fff; /* 文字颜色为白色 */
+    overflow-y: auto; /* 允许滚动 */
+    box-shadow: -3px 0 10px rgba(0,0,0,0.2); /* 左侧阴影 */
+    z-index: 1000; /* 确保浮于其他元素之上 */
+    padding: 20px;
+    box-sizing: border-box; /* 包括内边距在内的宽度计算 */
+    border-radius: 25px;
+}
+
+#downloadedSongsContainer ul {
+    list-style: none; /* 移除列表项目的符号 */
+}
+
+#downloadedSongsContainer li {
+    padding: 10px;
+    border-bottom: 1px solid #686868; /* 与页脚的边框颜色一致 */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* 平滑的背景色变化效果 */
+}
+
+#downloadedSongsContainer li:hover {
+    background-color: #535353; /* 悬停时的背景色 */
+}

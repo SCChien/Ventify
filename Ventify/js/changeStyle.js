@@ -101,3 +101,14 @@ function movenav(obj) { //修改圆点样式
     }
     obj.className = 'select_dot'
 }
+
+//歌单显示
+function toggleDownloadedSongs() {
+    var container = document.getElementById('downloadedSongsContainer');
+    if (container.style.display === 'none') {
+        container.style.display = 'block';
+    } else {
+        container.style.display = 'none';
+    }
+}
+

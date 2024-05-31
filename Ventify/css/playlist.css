@@ -173,3 +173,19 @@
 .popupOverlay.active {
     display: block;
 }
+
+.playlistName {
+    cursor: pointer;
+    margin: 10px 0;
+    padding: 5px;
+    color: #FFFFFF;
+}
+.playlistName:hover {
+    background-color: #333;
+}
+
+#backButton {
+    margin: 20px 0;
+    padding: 10px 20px;
+    background-color: #1DB954; /* Spotify*/
+}

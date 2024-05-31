@@ -12,17 +12,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["reg_username"]) && isset($_POST["reg_password"]) && isset($_POST["telephone"]) && isset($_POST["email"])) {
         // Registration process
         $reg_username = $_POST["reg_username"];
-        $reg_password = $_POST["reg_password"]; // Store password as plain text
+        $reg_password = $_POST["reg_password"];
         $telephone = $_POST["telephone"];
         $email = $_POST["email"];
 
-        // Check if the username is already taken
-        $check_query = "SELECT * FROM users WHERE username = '$reg_username'";
+        // Hash the password before storing
+        $hashed_password = password_hash($reg_password, PASSWORD_DEFAULT);
+
+        // Check if the username or email is already taken
+        $check_query = "SELECT * FROM users WHERE username = '$reg_username' OR email = '$email'";
         $check_result = $conn->query($check_query);
 
         if ($check_result->num_rows == 0) {
             // Insert new user into the database
-            $insert_query = "INSERT INTO users (username, password, telephone, email) VALUES ('$reg_username', '$reg_password', '$telephone', '$email')";
+            $insert_query = "INSERT INTO users (username, password, telephone, email, role) VALUES ('$reg_username', '$hashed_password', '$telephone', '$email', 'NORMAL USER')";
             if ($conn->query($insert_query) === TRUE) {
                 // Set success message for registration
                 $success_message = "Registration successful!";
@@ -31,8 +34,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $error_message = "Error: " . $conn->error;
             }
         } else {
-            // Display an error message for duplicate username
-            $error_message = "Username already taken. Please choose another username.";
+            // Check if the duplicate is due to username or email
+            $row = $check_result->fetch_assoc();
+            if ($row['username'] == $reg_username) {
+                $error_message = "Username already taken. Please choose another username.";
+            } else {
+                $error_message = "Email already registered. Please use another email.";
+            }
         }
     } else {
         // Check if the form is a login form
@@ -51,30 +59,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             // Check credentials using the database for users
-            $user_query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+            $user_query = "SELECT * FROM users WHERE username = '$username'";
             $user_result = $conn->query($user_query);
 
             if ($user_result->num_rows > 0) {
-                // Start a session and store the username
-                $_SESSION["username"] = $username;
+                $user = $user_result->fetch_assoc();
+                // Verify the hashed password
+                if (password_verify($password, $user['password'])) {
+                    // Start a session and store the username
+                    $_SESSION["username"] = $username;
 
-                // Set success message for login
-                $success_message = "Login successful!";
-                // Redirect user to index.php
-                header("Location: index.php");
-                exit(); // Ensure that script execution stops after redirection
+                    // Set success message for login
+                    $success_message = "Login successful!";
+                    // Redirect user to index.php
+                    header("Location: index.php");
+                    exit(); // Ensure that script execution stops after redirection
+                } else {
+                    // Display an error message for invalid credentials
+                    $error_message = "Invalid username or password";
+                }
             } else {
                 // Check credentials using the database for admins
-                $admin_query = "SELECT * FROM admin WHERE username = '$username' AND password = '$password'";
-                echo "Admin Query: $admin_query<br>"; // Debug statement
+                $admin_query = "SELECT * FROM admin WHERE username = '$username'";
                 $admin_result = $conn->query($admin_query);
                 
-                if ($admin_result) {
-                    echo "Admin Result Rows: " . $admin_result->num_rows . "<br>"; // Debug statement
-                    if ($admin_result->num_rows > 0) {
+                if ($admin_result->num_rows > 0) {
+                    $admin = $admin_result->fetch_assoc();
+                    // Verify the hashed password
+                    if (password_verify($password, $admin['password'])) {
                         // Start a session and store the username
                         $_SESSION["username"] = $username;
-                
+
                         // Set success message for login
                         $success_message = "Login successful!";
                         // Redirect admin to admin.php
@@ -85,14 +100,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $error_message = "Invalid username or password for admin";
                     }
                 } else {
-                    $error_message = "Database error: " . $conn->error;
+                    $error_message = "Invalid username or password";
                 }
             }
         }
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -112,6 +126,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php
             if (!empty($success_message) && isset($_POST["reg_username"])) {
                 echo "<p style='color: green;'>$success_message</p>";
+            } elseif (!empty($error_message) && isset($_POST["reg_username"])) {
+                echo "<p style='color: red;'>$error_message</p>";
             }
             ?>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
@@ -133,6 +149,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php
                 if (!empty($success_message) && isset($_POST["username"])) {
                     echo "<p style='color: green;'>$success_message</p>";
+                } elseif (!empty($error_message) && isset($_POST["username"])) {
+                    echo "<p style='color: red;'>$error_message</p>";
                 }
                 ?>
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">

@@ -5,8 +5,11 @@ CREATE TABLE users (
     telephone VARCHAR(20),
     email VARCHAR(100),
     pfp VARCHAR(255),
-    role VARCHAR(255)
+    role VARCHAR(255),
+    reset_token VARCHAR(255),
+    token_expires DATETIME
 );
+
 
 CREATE TABLE admin (
     admin_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -22,3 +25,13 @@ CREATE TABLE payment (
     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE TABLE plans (
+    plan_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    start_date DATE,
+    end_date DATE,
+    price DECIMAL(10, 2) 
+);
+

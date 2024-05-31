@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 include('./core/conn.php');
 
 if(isset($_SESSION['username'])) {
@@ -30,7 +29,7 @@ if(isset($_SESSION['username'])) {
   <meta charset="UTF-8">
   <title>Premium</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
-<link rel="stylesheet" href="./css/pricing.css">
+  <link rel="stylesheet" href="./css/pricing.css">
 </head>
 <body>
 
@@ -45,7 +44,7 @@ if(isset($_SESSION['username'])) {
         <div class="card">
           <div class="card__header">
             <div class="img1"><img src="../Ventify/image/icon1.png"></div>
-            <h2>Ventify Indiviual</h2>
+            <h2>Ventify Individual</h2>
           </div>
           <div class="card__desc">Best Plan for Personally</div>
         </div>
@@ -71,7 +70,7 @@ if(isset($_SESSION['username'])) {
             <h2>Student</h2>
             <div class="card__label label">Best Value</div>
           </div>
-          <div class="card__desc">More Cheapper to Student</div>
+          <div class="card__desc">More Cheaper to Student</div>
         </div>
 
         <div class="price">RM2<span>/ month</span></div>
@@ -108,8 +107,13 @@ if(isset($_SESSION['username'])) {
           <a href="payment3.php" class="button">Get Started</a>
       </div>
       <!--entp plan ends -->
-
     </div>
+
+    <!-- Add this section to include the button that links to plans.php -->
+    <div class="morePlans">
+      <a href="plans.php" class="button">More Premium Plans</a>
+    </div>
+
   </div>
 </section>
 <!-- partial -->

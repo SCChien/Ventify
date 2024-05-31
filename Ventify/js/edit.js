@@ -1,13 +1,3 @@
-document.getElementById("edit").addEventListener("click", function() {
-    var editSection = document.querySelector(".edit");
-    if (editSection.style.display === "none") {
-        editSection.style.display = "block";
-    } else {
-        editSection.style.display = "none";
-    }
-});
-
-
 // 检查用户在线状态的函数
 function checkOnlineStatus() {
     // 假设用户在线状态为true或false，根据实际情况修改
@@ -39,11 +29,11 @@ function closePopup() {
     document.getElementById("editProfilePopup").style.display = "none";
 }
 
-
-function showPopup() {
-    document.getElementById('editProfilePopup').style.display = 'block';
+function showPop_up() {
+    document.getElementById("Payment_History").style.display = "block";
 }
 
-function closePopup() {
-    document.getElementById('editProfilePopup').style.display = 'none';
+// 隐藏弹窗
+function closePop_up() {
+    document.getElementById("Payment_History").style.display = "none";
 }

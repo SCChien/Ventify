@@ -7,7 +7,7 @@ if(isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
 
     // Retrieve user information from the database
-    $user_query = "SELECT id, pfp, telephone, email FROM users WHERE username = '$username'";
+    $user_query = "SELECT id, pfp, telephone, email, role FROM users WHERE username = '$username'";
     $user_result = $conn->query($user_query);
 
     if ($user_result->num_rows == 1) {
@@ -17,6 +17,11 @@ if(isset($_SESSION['username'])) {
         $avatarPath = $row['pfp'];
         $telephone = $row['telephone'];
         $email = $row['email'];
+        $role = $row['role'];
+        $payment_query = "SELECT * FROM payment WHERE user_id = $user_id ORDER BY payment_date DESC";
+        $payment_result = $conn->query($payment_query);
+
+        
 
         // Handle form submission
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -40,7 +45,8 @@ if(isset($_SESSION['username'])) {
             // Update password
             if (isset($_POST['update_password'])) {
                 $newPassword = $_POST['new_password'];
-                $updatePasswordSql = "UPDATE users SET password = '$newPassword' WHERE id = $user_id";
+                $hashed_password = password_hash($newPassword, PASSWORD_DEFAULT);
+                $updatePasswordSql = "UPDATE users SET password = '$hashed_password' WHERE id = $user_id";
                 if ($conn->query($updatePasswordSql) === TRUE) {
                     echo "密码更新成功！";
                 } else {
@@ -92,7 +98,21 @@ if(isset($_SESSION['username'])) {
     <button onclick="window.location.href='./index.php'">Back</button>
 </div>
 <div class="container">
-    <div class="banner"></div>
+    <div class="banner">
+        <div class="plan-box">
+            <div class="plan-title">Your plan</div>
+            <div class="plan-type"><?php echo $role; ?></div>
+            <?php if ($role === ' NORMAL USER'): ?>
+                <div class="premium-button">
+                    <button onclick="window.location.href='premium.php'">Join Premium</button>
+                </div>
+            <?php endif; ?>
+        </div>
+        <div class="button">
+                <button id="payment_history" onclick="showPop_up()">View Payment History</button>
+            </div>
+
+    </div>
     <div class="user-info">
         <div class="userpfp">
             <img src="<?php echo $avatarPath; ?>" alt="Profile Picture">
@@ -103,6 +123,7 @@ if(isset($_SESSION['username'])) {
         <div class="button">
             <button id="edit" onclick="showPopup()">Edit User Profile</button>
         </div>
+        
     </div>
     <div class="info">
         <div>Name: <?php echo $username; ?></div>
@@ -145,8 +166,29 @@ if(isset($_SESSION['username'])) {
     </div>
 </div>
 
+<div id="Payment_History" class="popup">
+    <div class="popup-content">
+        <span class="close" onclick="closePop_up()">&times;</span>
+        <h2>Payment History</h2>
+        <?php
+        if ($payment_result->num_rows > 0) {
+            echo "<table>";
+            echo "<tr><th>Payment ID</th><th>Amount</th><th>Payment Date</th></tr>";
+            while ($payment_row = $payment_result->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . $payment_row['payment_id'] . "</td>";
+                echo "<td>" . $payment_row['amount'] . "</td>";
+                echo "<td>" . $payment_row['payment_date'] . "</td>";
+                echo "</tr>";
+            }
+            echo "</table>";
+        } else {
+            echo "<p>No payment history found.</p>";
+        }
+        ?>
+        </div>
+</div>
 
-    <script src="js/edit.js"></script>
+<script src="js/edit.js"></script>
 </body>
-
 </html>

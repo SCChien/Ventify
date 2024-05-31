@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
            // Insert payment record
            $sql_insert_payment = "INSERT INTO payment (user_id, amount) VALUES ((SELECT id FROM users WHERE username='$username'), 2)";
            if ($conn->query($sql_insert_payment) === TRUE) {
-               echo "Payment successful! You are now a VIP member.";
+            echo "<script>alert('Payment successful! You are now a VIP member.'); window.location.href = 'index.php';</script>";
            } else {
                echo "Error inserting payment record: " . $conn->error;
            }

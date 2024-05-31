@@ -28,9 +28,9 @@ if(isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 
 // 读取 JSON 数据库
-$jsonData = file_get_contents('album.json');
+$jsonData = file_get_contents('./sql/album.json');
 $database = json_decode($jsonData, true);
-$userPlaylist = 'album.json';
+$userPlaylist = './sql/album.json';
 
 // 检查用户是否存在于数据库中，如果不存在则创建新用户记录
 if(!isset($database[$username])) {
@@ -61,17 +61,12 @@ if(isset($_POST['add_song'])) {
     exit();
 }
 
-
-
 // 保存数据库到 JSON 文件
 function saveDatabase($database) {
     $jsonData = json_encode($database, JSON_PRETTY_PRINT);
     file_put_contents('album.json', $jsonData);
 }
 ?>
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,7 +99,6 @@ function saveDatabase($database) {
                     <i class="iconfont icon-sousuo"><a href="searchmusic.php">Search</a></i>
                 </div>
             </div>
-
 
             <div class="other">
                 <div class="userInfo">
@@ -158,58 +152,29 @@ function saveDatabase($database) {
             </div>
             <div class="right-box">
                 <ul class="navigation">
-                    <li class="active"><span>Home</span></li>
+                    <li class="active"><a href="index.php"><span>Home</span></a></li>
                     <li><span>Recommend Song</span></li>
                     <li><a href="playlist.php"><span>Album Playlist</span></a></li>
                     <li><span>Best of Song</span></li>
                     <li><a href="singer.php"><span>Singer</span></a></li></li>
                 </ul> 
                 <div class="playlist">
-                    <div class="album">
-                    <h2>Albums for <?php echo $username; ?></h2>
-                    <!-- Form to select playlist -->
-                    <form method="post">
-                        <label for="select_playlist">Select Playlist:</label>
-                        <select id="select_playlist" name="selected_playlist">
-                            <?php
-                            foreach($database[$username]['albums'] as $albumName => $playlist) {
-                                echo "<option value='$albumName'>$albumName</option>";
-                            }
-                            ?>
-                        </select>
-                        <input type="submit" name="show_playlist" value="Show Playlist">
-                    </form>
-                    <!-- Display selected playlist contents in a table -->
-                        <?php
-                        if(isset($_POST['show_playlist'])) {
-                            $selectedPlaylist = $_POST['selected_playlist'];
-                            echo "<h3>Playlist: $selectedPlaylist</h3>";
-                            echo "<table>";
-                            echo "<thead>";
-                            echo "<tr>";
-                            echo "<th>#</th>";
-                            echo "<th>Title</th>";
-                            echo "<th>Author</th>";
-                            echo "</tr>";
-                            echo "</thead>";
-                            echo "<tbody>";
-                            $count = 1;
-                            foreach($database[$username]['albums'][$selectedPlaylist] as $song) {
-                                // Assuming $song contains more details such as album, date added, and duration
-                                list($songName, $author) = explode(', ', $song);
-                                echo "<tr>";
-                                echo "<td>$count</td>";
-                                echo "<td>$songName</td>";
-                                echo "<td>$author</td>";
-                                echo "</tr>";
-                                $count++;
-                            }
-                            echo "</tbody>";
-                            echo "</table>";
-                        }
-                        ?>
+                        <div class="album">
+                            <h2>Albums for <?php echo $username; ?></h2>
+                            <div id="playlistNames">
+                                <?php
+                                foreach($database[$username]['albums'] as $albumName => $playlist) {
+                                    echo "<p class='playlistName' data-album='$albumName'>$albumName</p>";
+                                }
+                                ?>
+                            </div>
+                            <div id="playlistContent" style="display: none;">
+                                
+                                <!-- 用于显示 playlist 中的歌曲 -->
+                            </div>
+                            <button id="backButton" style="display: none;">Back to Playlists</button>
+                        </div>
                     </div>
-                </div>
             </div>
         </div>
         
@@ -252,13 +217,7 @@ function saveDatabase($database) {
             </ul>
         </div>
     </div>
-    <!-- Place this div anywhere within the body tag -->
-    <div id="successMessage" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
-        Song added to playlist successfully.
-    </div>
-    <div id="errorMessage" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
-    Song already exists in the playlist.
-    </div>
+    
 
     <div id="popupWindow" class="popupWindow">
         <span class="close">&times;</span>
@@ -283,39 +242,79 @@ function saveDatabase($database) {
             }
             ?>
             </select><br><br>
-            <label for='song_name'>Song Name:</label>
-            <input type='text' id='song_name' name='song_name' required><br><br>
-            <label for='author'>Author:</label>
+            <label for='title'>Song Title:</label>
+            <input type='text' id='title' name='title' required><br><br>
+            <label for='author'>Song Author:</label>
             <input type='text' id='author' name='author' required><br><br>
             <input type='submit' name='add_song' value='Add Song'>
             </form>
         </div>
     </div>
-
-
-    <div class="lyrics-section" style="display: none;">
-        <div class="lyrics-overlay"></div>
-            <div class="lyrics-content">
-                <div class="song-details">
-                    <img src="./image/logo.png" alt="Song Photo">
-                    <div class="details-text">
-                        <h2>Artist Name</h2>
-                        <p>Song Name</p>
-                    </div>
-                </div>
-                <div class="song-lyrics">
-                    <h2>Song Lyrics</h2>
-                    <p class="lyrics">These are the song lyrics.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    
+    <!-- JavaScript 部分 -->
     <script src="./js/listen.js"></script>
     <script src="./js/song_lycris.js"></script>
     <script src="./js/changeStyle.js"></script>
-    <script src="js/playlist.js"></script>
-    
+    <script src="./js/playlist.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const playlistNames = document.querySelectorAll('.playlistName');
+        const playlistNamesContainer = document.getElementById('playlistNames');
+        const playlistContent = document.getElementById('playlistContent');
+        const backButton = document.getElementById('backButton');
+
+        playlistNames.forEach(name => {
+            name.addEventListener('click', function() {
+                const albumName = this.getAttribute('data-album');
+                
+                fetch('get_playlist.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `album=${albumName}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    let html = `<h3>Playlist: ${albumName}</h3>`;
+                    html += "<table>";
+                    html += "<thead>";
+                    html += "<tr>";
+                    html += "<th>#</th>";
+                    html += "<th>Title</th>";
+                    html += "<th>Author</th>";
+                    html += "</tr>";
+                    html += "</thead>";
+                    html += "<tbody>";
+                    
+                    data.songs.forEach((song, index) => {
+                        html += "<tr>";
+                        html += `<td>${index + 1}</td>`;
+                        html += `<td>${song.title}</td>`;
+                        html += `<td>${song.author}</td>`;
+                        html += "</tr>";
+                    });
+                    
+                    html += "</tbody>";
+                    html += "</table>";
+
+                    playlistContent.innerHTML = html;
+                    backButton.style.display = 'block';
+                    playlistNamesContainer.style.display = 'none';
+                    playlistContent.style.display = 'block';
+                });
+            });
+        });
+
+        backButton.addEventListener('click', function() {
+            playlistContent.style.display = 'none';
+            backButton.style.display = 'none';
+            playlistNamesContainer.style.display = 'block';
+        });
+    });
+</script>
+
+
     
 </body>
 </html>
