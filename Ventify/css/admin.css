@@ -1,77 +1,191 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500');
 
-body{
+body {
     overflow-x: hidden;
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
+    background-color: #1e1e1e; /* Dark background color */
+    color: #d1d1d1; /* Light gray text color */
 }
 
-
-/* 所有内容隐藏 */
-.page{
+.page {
     display: none;
 }
 
-#viewport{
+#viewport {
     padding-left: 250px;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
 }
 
-#content{
+#content {
     width: 100%;
     position: relative;
     margin-right: 0;
 }
 
-/* 侧边栏样式 */
-#sidebar{
+#sidebar {
     z-index: 100;
     position: fixed;
-    left: 250px;
+    left: 0;
     width: 250px;
     height: 100%;
     overflow-y: auto;
-    margin-left: -250px;
-    background: #37474f;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
+    background: #2c2c2c; /* Dark sidebar color */
     transition: all 0.5s ease;
 }
 
-
-#sidebar header{
-    background-color: #263238;
+#sidebar header {
+    background-color: #3b3b3b; /* Darker header color */
     font-size: 20px;
     line-height: 52px;
     text-align: center;
 }
 
-#sidebar header a{
-    color: #fff;
+#sidebar header a {
+    color: #ffffff; /* White text color */
     display: block;
     text-decoration: none;
 }
 
-#sidebar header a:hover{
-    color: rgb(245, 151, 151);
+#sidebar header a:hover {
+    color: #f5f5f5;
 }
 
-#sidebar .nav a{
+#sidebar .nav a {
     background: none;
-    border-bottom: 1px solid #455A64;
-    color: #cfd8dc;
+    border-bottom: 1px solid #4b4b4b; /* Slightly darker border */
+    color: #b0b0b0; /* Light gray text color */
     padding: 16px 24px;
+    display: flex;
+    align-items: center;
 }
 
-
-#sidebar .nav a:hover{
-    background: none;
-    color: #ECEFF1;
+#sidebar .nav a:hover {
+    background: #4b4b4b; /* Slightly lighter hover color */
+    color: #ffffff; /* White text color */
 }
-.fas{
-    margin-right: -14px;
+
+#sidebar .nav a .fas {
+    margin-right: 10px;
+}
+
+.navbar {
+    background: #3b3b3b; /* Dark navbar background */
+    border-bottom: 1px solid #4b4b4b; /* Dark border color */
+    padding: 10px 20px;
+}
+
+.navbar h1 {
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0;
+    color: #ffffff; /* White text color */
+}
+
+.container-fluid {
+    padding: 20px;
+}
+
+h1, h2 {
+    color: #d1d1d1; /* Light gray heading color */
+    font-weight: 500;
+}
+
+form {
+    background: #2c2c2c; /* Dark form background */
+    padding: 20px;
+    border: 1px solid #3b3b3b; /* Dark border color */
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #d1d1d1; /* Light gray label color */
+}
+
+form input[type="text"], 
+form input[type="password"], 
+form input[type="email"], 
+form input[type="date"], 
+form textarea, 
+form select {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #555; /* Darker border color */
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #1e1e1e; /* Dark input background */
+    color: #d1d1d1; /* Light gray text color */
+}
+
+form button[type="submit"], 
+form input[type="submit"] {
+    background: #4b4b4b; /* Dark button background */
+    color: #ffffff; /* White text color */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+form button[type="submit"]:hover, 
+form input[type="submit"]:hover {
+    background: #37474f;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #2c2c2c; /* Dark table background */
+}
+
+table th, table td {
+    padding: 10px;
+    border: 1px solid #4b4b4b; /* Dark border color */
+    text-align: left;
+    color: #d1d1d1; /* Light gray text color */
+}
+
+table th {
+    background: #3b3b3b; /* Darker header background */
+    color: #ffffff; /* White text color */
+}
+
+table tr {
+    background: #2c2c2c; /* Dark even row background */
+}
+
+table tr:hover {
+    background: #3b3b3b; /* Dark hover background */
+}
+
+.table-container {
+    margin-top: 20px;
+}
+
+.table th, .table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.btn-submit {
+    display: block;
+    width: 20%;
+    margin: 20px auto;
+    background: #4b4b4b; /* Dark button background */
+    color: #ffffff; /* White text color */
 }

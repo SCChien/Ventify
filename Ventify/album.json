@@ -2,32 +2,11 @@
     "kelvin": {
         "username": "kelvin",
         "albums": {
-            "darren": [
-                "asd, asd",
-                "aaa, aaa"
-            ],
             "test": [
-                "asd, asd"
-            ]
-        }
-    },
-    "john_doe": {
-        "username": "john_doe",
-        "albums": {
-            "test2": [
-                "asdasd, aaaa",
-                "123, 456"
+                "asd, asd",
+                "yueheng, yueheng"
             ],
-            "asdas": [
-                "sss, sss"
-            ]
-        }
-    },
-    "venti": {
-        "username": "venti",
-        "albums": {
-            "qwe": [],
-            "wer": []
+            "test2": []
         }
     }
 }

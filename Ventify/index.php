@@ -25,6 +25,49 @@ if(isset($_SESSION['username'])) {
     header("Location:login.php");
     exit();
 }
+
+// 获取当前登录的用户名
+$username = $_SESSION['username'];
+
+// 读取 JSON 数据库
+$jsonData = file_get_contents('album.json');
+$database = json_decode($jsonData, true);
+$userPlaylist = 'album.json';
+
+// 检查用户是否存在于数据库中，如果不存在则创建新用户记录
+if(!isset($database[$username])) {
+    $database[$username] = array(
+        "username" => $username,
+        "albums" => array()
+    );
+}
+
+// 处理用户的专辑操作
+if(isset($_POST['create_album'])) {
+    $albumName = $_POST['album_name'];
+    $database[$username]['albums'][$albumName] = array();
+    saveDatabase($database);
+    echo "<p>Album '$albumName' created successfully!</p>";
+    header("Location: index.php");
+    exit();
+}
+
+if(isset($_POST['add_song'])) {
+    $albumName = $_POST['album'];
+    $songName = $_POST['song_name'];
+    $author = $_POST['author'];
+    $database[$username]['albums'][$albumName][] = "$songName, $author";
+    saveDatabase($database);
+    echo "<p>Song '$songName' added to album '$albumName' successfully!</p>";
+    header("Location: index.php");
+    exit();
+}
+
+// 保存数据库到 JSON 文件
+function saveDatabase($database) {
+    $jsonData = json_encode($database, JSON_PRETTY_PRINT);
+    file_put_contents('album.json', $jsonData);
+}
 ?>
 
 <!DOCTYPE html>
@@ -39,7 +82,6 @@ if(isset($_SESSION['username'])) {
     <link rel="stylesheet" href="./css/font_header.css">
     <link rel="stylesheet" href="./css/font_leftBox.css">
     <link rel="stylesheet" href="css/font_footer.css">
-    <link rel="stylesheet" href="css/song_lyrics.css">
 </head>
 <body>
     <div class="container">
@@ -80,8 +122,8 @@ if(isset($_SESSION['username'])) {
         <div class="main">
             <div class="left-box">
                 <ul>
-                    <li><span>Explore Music</span></a></li>
-                    <li><span>播客</span></li>
+                    <a href="index.php"><li><span>Home</span></li></a>
+                    <a href="playlist.php"><li><span>Playlist</span></li></a>
                     <li><span>视频</span></li>
                     <li><span>关注</span></li>
                     <li><span>直播</span></li>
@@ -110,15 +152,6 @@ if(isset($_SESSION['username'])) {
                 </div>
             </div>
             <div class="right-box">
-                <ul class="navigation">
-                    <li class="active"><span>Home</span></li>
-                    <li><span>Recommend Song</span></li>
-                    <li><a href="playlist.php"><span>Album Playlist</span></a></li>
-                    <li><span>Best of Song</span></li>
-                    <li><a href="singer.php"><span>Singer</span></a></li></li>
-                </ul> 
-
-
                 <div class="recm_list">
                     <div class="recm_word">推荐歌曲<i class="iconfont icon-jiantou-xiangyou"></i></div>
                     <ul>
@@ -154,7 +187,7 @@ if(isset($_SESSION['username'])) {
             <div class="ft_left">
                 <img class="_img" src="./image/main/est.jpg" alt="">
                 <div class="songNameAndSinger">
-                    <span class="songName">春夏秋冬reprise<i class="iconfont icon-aixin"></i></span>
+                    <span class="songName">春夏秋冬reprise<i class="iconfont icon-aixin" id="showPopup"></i></span>
                     <span class="singer">當山みれい</span>
                 </div>
             </div>
@@ -187,75 +220,42 @@ if(isset($_SESSION['username'])) {
             </ul>
         </div>
     </div>
-    <!-- Place this div anywhere within the body tag -->
-    <div id="successMessage" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
-        Song added to playlist successfully.
-    </div>
-    <div id="errorMessage" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
-    Song already exists in the playlist.
-    </div>
 
-
-    <div class="lyrics-section" style="display: none;">
-        <div class="lyrics-overlay"></div>
-            <div class="lyrics-content">
-                <div class="song-details">
-                    <img src="./image/logo.png" alt="Song Photo">
-                    <div class="details-text">
-                        <h2>Artist Name</h2>
-                        <p>Song Name</p>
-                    </div>
-                </div>
-                <div class="song-lyrics">
-                    <h2>Song Lyrics</h2>
-                    <p class="lyrics">These are the song lyrics.</p>
-                </div>
-            </div>
+    <div id="popupWindow" class="popupWindow">
+        <span class="close">&times;</span>
+        <div class="create_album">
+            <h3>Create Album</h3>
+            <form method='post'>
+            <label for='album_name'>Album Name:</label>
+            <input type='text' id='album_name' name='album_name' required><br><br>
+            <input type='submit' name='create_album' value='Create Album'>
+            </form>
         </div>
+                    
+        <!-- 添加歌曲的表单 -->
+        <div class="add_song">
+            <h3>Add Song</h3>
+            <form method='post'>
+            <label for='album'>Select Album:</label>
+            <select id='album' name='album'>
+            <?php
+            foreach($database[$username]['albums'] as $albumName => $playlist) {
+                echo "<option value='$albumName'>$albumName</option>";
+            }
+            ?>
+            </select><br><br>
+            <label for='title'>Song Title:</label>
+            <input type='text' id='title' name='title' required><br><br>
+            <label for='author'>Song Author:</label>
+            <input type='text' id='author' name='author' required><br><br>
+            <input type='submit' name='add_song' value='Add Song'>
+            </form>
+        </div>
+    </div>
+
 
     <script src="./js/listen.js"></script>
-    <script src="./js/song_lycris.js"></script>
     <script src="./js/changeStyle.js"></script>
-    <script>
-document.addEventListener("DOMContentLoaded",   () {
-    // Add event listener to the anchor tag
-    document.getElementById("addToPlaylist").addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent default anchor behavior
-
-        // Get the song details
-        var songName = document.querySelector(".songName").textContent.trim();
-        var singer = document.querySelector(".singer").textContent.trim();
-
-        // Send AJAX request to PHP script
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "add_to_playlist.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                // Handle the response
-                var response = xhr.responseText.trim();
-                if (response === "Song added to playlist successfully.") {
-                    // Show success message
-                    document.getElementById("successMessage").innerText = response;
-                    document.getElementById("successMessage").style.display = "block";
-                    // Hide success message after 3 seconds
-                    setTimeout(function() {
-                        document.getElementById("successMessage").style.display = "none";
-                    }, 3000);                           
-                } else {
-                    // Show error message
-                    document.getElementById("errorMessage").innerText = response;
-                    document.getElementById("errorMessage").style.display = "block";
-                    // Hide error message after 3 seconds
-                    setTimeout(function() {
-                        document.getElementById("errorMessage").style.display = "none";
-                    }, 3000);
-                }
-            }
-        };
-        xhr.send("songName=" + encodeURIComponent(songName) + "&singer=" + encodeURIComponent(singer));
-    });
-});
-</script>
+    <script src="./js/playlist.js"></script>
 </body>
 </html>

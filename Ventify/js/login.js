@@ -17,3 +17,5 @@ register_title.addEventListener('click',()=>{
         register_box.classList.remove('slide-up');
     }
 })
+
+

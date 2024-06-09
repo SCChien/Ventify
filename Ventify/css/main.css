@@ -1,4 +1,12 @@
 /* 公共样式 */
+/*Clear effect of user agent stylesheet*/
+html{color:#000;background:#FFF;}   
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,   
+fieldset,input,textarea,p,blockquote,th,td {   
+margin:0;   
+padding:0;   
+} 
+
 *{
     padding: 0;
     margin: 0;
@@ -191,7 +199,9 @@ body {
     color: skyblue;
 }
 
-
+a{
+    color: #fff;
+}
 
 .left-box .my_music,
 .left-box .create_list{
@@ -527,4 +537,89 @@ body {
 
 .dot .select_dot {
     background-color: red;
+}
+
+/* General popup window styles */
+.popupWindow {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 99999999; /* Sit on top */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px; /* Adjust to your needs */
+    padding: 20px;
+    background-color: #1e1e1e; /* Dark background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    color: #FFFFFF; /* Light text */
+}
+
+/* Close button styles */
+.popupWindow .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #FFFFFF; /* White color */
+}
+
+/* Form header styles */
+.popupWindow h3 {
+    margin-top: 0;
+    font-size: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+/* Form label styles */
+.popupWindow label {
+    display: block;
+    margin: 10px 0 5px;
+    font-size: 14px;
+}
+
+/* Form input styles */
+.popupWindow input[type="text"],
+.popupWindow select {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+    background-color: #2e2e2e; /* Slightly lighter background */
+    color: #FFFFFF;
+    border-radius: 4px;
+}
+
+/* Form submit button styles */
+.popupWindow input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #1DB954; /* Spotify green for contrast */
+    border: none;
+    color: #FFFFFF;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.popupWindow input[type="submit"]:hover {
+    background-color: #1ed760;
+}
+
+/* Overlay effect */
+.popupOverlay {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 998; /* Sit below popup */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Black with transparency */
+}
+
+/* Active state for showing the popup */
+.popupWindow.active,
+.popupOverlay.active {
+    display: block;
 }

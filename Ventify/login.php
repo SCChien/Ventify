@@ -86,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($admin_result->num_rows > 0) {
                     $admin = $admin_result->fetch_assoc();
                     // Verify the hashed password
-                    if (password_verify($password, $admin['password'])) {
+                    if (password_verify($password, $admin['password']) && $admin['status'] == 1) {
                         // Start a session and store the username
                         $_SESSION["username"] = $username;
 
@@ -97,7 +97,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         exit(); // Ensure that script execution stops after redirection
                     } else {
                         // Display an error message for invalid credentials
-                        $error_message = "Invalid username or password for admin";
+                        if($admin['status'] != 1) {
+                            echo"<script>alert('This admin account already unactive. Please contact with superadmin'); window.location.href = 'login.php';</script>";
+                            
+                        }else {
+                            $error_message = "Invalid username or password for admin";
+                        }
+                        
                     }
                 } else {
                     $error_message = "Invalid username or password";

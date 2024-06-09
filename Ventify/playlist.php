@@ -28,9 +28,9 @@ if(isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 
 // 读取 JSON 数据库
-$jsonData = file_get_contents('./sql/album.json');
+$jsonData = file_get_contents('album.json');
 $database = json_decode($jsonData, true);
-$userPlaylist = './sql/album.json';
+$userPlaylist = 'album.json';
 
 // 检查用户是否存在于数据库中，如果不存在则创建新用户记录
 if(!isset($database[$username])) {
@@ -79,7 +79,6 @@ function saveDatabase($database) {
     <link rel="stylesheet" href="./css/font_header.css">
     <link rel="stylesheet" href="./css/font_leftBox.css">
     <link rel="stylesheet" href="css/font_footer.css">
-    <link rel="stylesheet" href="css/song_lyrics.css">
     <link rel="stylesheet" href="css/playlist.css">
     
 </head>
@@ -121,8 +120,8 @@ function saveDatabase($database) {
         <div class="main">
             <div class="left-box">
                 <ul>
-                    <li><span>Explore Music</span></li>
-                    <li><span>播客</span></li>
+                    <a href="index.php"><li><span>Home</span></li></a>
+                    <a href="playlist.php"><li><span>Playlist</span></li></a>
                     <li><span>视频</span></li>
                     <li><span>关注</span></li>
                     <li><span>直播</span></li>
@@ -150,14 +149,7 @@ function saveDatabase($database) {
                     </span>
                 </div>
             </div>
-            <div class="right-box">
-                <ul class="navigation">
-                    <li class="active"><a href="index.php"><span>Home</span></a></li>
-                    <li><span>Recommend Song</span></li>
-                    <li><a href="playlist.php"><span>Album Playlist</span></a></li>
-                    <li><span>Best of Song</span></li>
-                    <li><a href="singer.php"><span>Singer</span></a></li></li>
-                </ul> 
+            <div class="right-box"> 
                 <div class="playlist">
                         <div class="album">
                             <h2>Albums for <?php echo $username; ?></h2>
@@ -243,7 +235,7 @@ function saveDatabase($database) {
             ?>
             </select><br><br>
             <label for='title'>Song Title:</label>
-            <input type='text' id='title' name='title' required><br><br>
+            <input type='text' id='song_name' name='song_name' required><br><br>
             <label for='author'>Song Author:</label>
             <input type='text' id='author' name='author' required><br><br>
             <input type='submit' name='add_song' value='Add Song'>
@@ -253,7 +245,6 @@ function saveDatabase($database) {
     
     <!-- JavaScript 部分 -->
     <script src="./js/listen.js"></script>
-    <script src="./js/song_lycris.js"></script>
     <script src="./js/changeStyle.js"></script>
     <script src="./js/playlist.js"></script>
     <script>
@@ -281,8 +272,9 @@ function saveDatabase($database) {
                     html += "<thead>";
                     html += "<tr>";
                     html += "<th>#</th>";
-                    html += "<th>Title</th>";
+                    html += "<th>Song Name</th>";
                     html += "<th>Author</th>";
+                    html += "<th>Action</th>"; <!-- Add Action column -->
                     html += "</tr>";
                     html += "</thead>";
                     html += "<tbody>";
@@ -292,6 +284,7 @@ function saveDatabase($database) {
                         html += `<td>${index + 1}</td>`;
                         html += `<td>${song.title}</td>`;
                         html += `<td>${song.author}</td>`;
+                        html += `<td><button class="deleteSong" data-album="${albumName}" data-index="${index}">Delete</button></td>`;
                         html += "</tr>";
                     });
                     
@@ -302,6 +295,30 @@ function saveDatabase($database) {
                     backButton.style.display = 'block';
                     playlistNamesContainer.style.display = 'none';
                     playlistContent.style.display = 'block';
+
+                    document.querySelectorAll('.deleteSong').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const albumName = this.getAttribute('data-album');
+                            const songIndex = this.getAttribute('data-index');
+                            
+                            fetch('delete_song.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: `album=${albumName}&index=${songIndex}`
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Song deleted successfully!');
+                                    location.reload();
+                                } else {
+                                    alert('Failed to delete song.');
+                                }
+                            });
+                        });
+                    });
                 });
             });
         });
@@ -312,9 +329,6 @@ function saveDatabase($database) {
             playlistNamesContainer.style.display = 'block';
         });
     });
-</script>
-
-
-    
+    </script> 
 </body>
 </html>

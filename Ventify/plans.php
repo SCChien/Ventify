@@ -36,6 +36,9 @@ $plans_result = $conn->query($plans_query);
     <link rel="stylesheet" href="./css/plans.css">
 </head>
 <body>
+<header>
+  <a href="index.php"><img src="./image/icon_white.png"><span>entify</span></a>
+</header>
 <section class="plans__container">
   <div class="plans">
     <div class="plansHero">
@@ -76,6 +79,11 @@ $plans_result = $conn->query($plans_query);
           echo "<p>No plans available.</p>";
       }
       ?>
+    </div>
+    
+
+    <div class="morePlans">
+      <a href="premium.php" class="button">Back</a>
     </div>
   </div>
 </section>

@@ -32,7 +32,9 @@ if(isset($_SESSION['username'])) {
   <link rel="stylesheet" href="./css/pricing.css">
 </head>
 <body>
-
+<header>
+  <a href="index.php"><img src="./image/icon_white.png"><span>entify</span></a>
+</header>
 <section class="plans__container">
   <div class="plans">
     <div class="plansHero">

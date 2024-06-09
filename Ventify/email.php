@@ -19,7 +19,7 @@ if(isset($_POST['submit'])){
         $message = '<html><body>';
         $message .= '<h1>Password Reset</h1>';
         $message .= '<p>To reset your password, click the link below:</p>';
-        $message .= '<p><a href="http://localhost/Final%20Year%20Project/FYP/Ventify/Ventify/rspass.php?email=' . urlencode($to) . '">Reset Password</a></p>';
+        $message .= '<p><a href="http://localhost/Ventify%20(1)/Ventify/rspass.php?email=' . urlencode($to) . '">Reset Password</a></p>';
         $message .= '</body></html>';
         
         $mail = new PHPMailer(true);

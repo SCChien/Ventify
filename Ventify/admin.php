@@ -140,6 +140,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_plan"])) {
     }
 }
 
+// Handle the form submission to update the status of the selected admin account
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["disable_admin"])) {
+    // Check if current user is superadmin
+    if ($_SESSION["username"] === "venti") {
+        // Ensure admin_username and admin_status are set
+        if(isset($_POST["admin_username"]) && isset($_POST["admin_status"])){
+            $admin_username = $_POST["admin_username"];
+            $admin_status = $_POST["admin_status"];
+
+            // Prepare the update query
+            $update_status_query = "UPDATE admin SET status = ? WHERE username = ?";
+            
+            // Prepare and bind parameters
+            $stmt = $conn->prepare($update_status_query);
+            $stmt->bind_param("is", $admin_status, $admin_username);
+
+            // Execute the update query
+            if ($stmt->execute()) {
+                // Set success message
+                echo"<script>alert('Admin status have been updated'); window.location.href = 'admin.php';</script>";
+            } else {
+                // Display error message for database error
+                $error_message = "Error updating admin account status: " . $stmt->error;
+            }
+
+            // Close statement
+            $stmt->close();
+        } else {
+            // Display error message if admin_username or admin_status is not set
+            $error_message = "Admin username or status not provided.";
+        }
+    } else {
+        // Display error message for non-superadmin users trying to disable admin accounts
+        $error_message = "Only superadmin can disable admin accounts.";
+    }
+}
+
+
 // Fetch all plans from the database
 $plans_query = "SELECT * FROM plans";
 $plans_result = $conn->query($plans_query);
@@ -148,6 +186,7 @@ $plans_result = $conn->query($plans_query);
 $users_query = "SELECT * FROM users";
 $users_result = $conn->query($users_query);
 // Close database connection
+
 $conn->close();
 ?>
 
@@ -157,7 +196,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Admin Panel</title>
     <link rel="icon" href="image/logo.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -165,49 +204,37 @@ $conn->close();
     <link rel="stylesheet" href="./css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <div id="viewport">
         <!-- 侧边栏 -->
         <div id="sidebar">
             <header>
-                <a href="#">我的应用</a>
+                <a href="#">Ventify</a>
             </header>
             <ul class="nav">
                 <li>
                     <a href="#" data-target="dashboard">
-                        仪表盘
+                        Payment History
                     </a>
                 </li>
                 <li>
                     <a href="#" data-target="delete">
-                        快捷方式
+                        Admin Manage
                     </a>
                 </li>
-                <li>
-                    <a href="#" data-target="overview">
-                        概览
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-target="events">
-                        事件
-                    </a>
-                </li>
+                
                 <li>
                     <a href="#" data-target="about">
-                        关于
+                        User List
                     </a>
                 </li>
                 <li>
                     <a href="#" data-target="services">
-                        服务
+                        Plan Manage
                     </a>
                 </li>
-                <li>
-                    <a href="#" data-target="contact">
-                        联系我们
-                    </a>
-                </li>
+                
                 <li>
                     <a href="login.php">
                         Logout
@@ -217,95 +244,173 @@ $conn->close();
         </div>
         <!-- 内容区域 -->
         <div id="content">
-            <nav class="navbar navbar-default">
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <h1>Admin Panel</h1>
-                    </div>
-                </div>
-            </nav>
-            <div class="container-fluid">
-                <div id="dashboard" class="page">
-                    <h1>Display Options</h1>
-                    <form method="POST" action="">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <h1>Admin Panel</h1>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div id="dashboard" class="page">
+            <div class="display_option">
+                <h1>Display Options</h1>
+                <form method="POST" action="">
+                    <div class="form-group">
                         <label for="display_option">Select Display Option:</label>
-                        <select name="display_option" id="display_option">
+                        <select class="form-control" name="display_option" id="display_option">
                             <option value="user_payments">User Payments</option>
                             <option value="total_payment">Total Payment</option>
                         </select>
-                        <button type="submit" name="submit_display">Display</button>
-                    </form>
-                    
-                    <!-- Display User Payments -->
-                    <?php if (isset($payments_result)) : ?>
-                        <h2>User Payments</h2>
-                        <ul>
-                            <?php
-                            if ($payments_result && $payments_result->num_rows > 0) {
-                                while ($row = $payments_result->fetch_assoc()) {
-                                    echo "<li>{$row['username']} - {$row['amount']} - {$row['payment_date']}</li>";
+                    </div>
+                    <button class="btn btn-primary btn-submit" type="submit" name="submit_display">Display</button>
+                </form>
+            </div>
+            <!-- Display User Payments -->
+            <div class="Payment_list">
+                <?php if (isset($payments_result)) : ?>
+                    <h2>User Payments</h2>
+                    <div class="table-container">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Amount</th>
+                                    <th>Payment Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                if ($payments_result && $payments_result->num_rows > 0) {
+                                    while ($row = $payments_result->fetch_assoc()) {
+                                        echo "<tr>
+                                                <td>{$row['username']}</td>
+                                                <td>{$row['amount']}</td>
+                                                <td>{$row['payment_date']}</td>
+                                              </tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='3'>No payments found.</td></tr>";
                                 }
-                            } else {
-                                echo "<li>No payments found.</li>";
-                            }
-                            ?>
-                        </ul>
-                    <?php endif; ?>
-                        
-                    <!-- Display Total Payment Amount -->
-                    <?php if (isset($total_payment_amount)) : ?>
-                        <h2>Total Payment Amount</h2>
-                        <p><?php echo "Total amount paid: " . number_format($total_payment_amount, 2); ?></p>
-                    <?php endif; ?>
-                    
-                </div>
-                <div id="delete" class="page">
-                    <h1>Admin List</h1>
-                    <ul>
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+                            
+                <!-- Display Total Payment Amount -->
+                <?php if (isset($total_payment_amount)) : ?>
+                    <h2>Total Payment Amount</h2>
+                    <p class="lead text-center"><?php echo "Total amount paid: $" . number_format($total_payment_amount, 2); ?></p>
+                <?php endif; ?>
+            </div>
+        </div>
+        <div id="delete" class="page">
+            <h1>Admin List</h1>
+            <div class="admin_list">
+                <table class="admin_list">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <?php
                         if ($admins_result && $admins_result->num_rows > 0) {
                             while ($row = $admins_result->fetch_assoc()) {
-                                echo "<li>{$row['username']} - {$row['email']}</li>";
+                                if($row['status'] == 1){
+                                    $status = 'Active';
+                                }else{
+                                    $status = 'Unactive';
+                                }
+                                echo "<tr>
+                                        <td>{$row['username']}</td>
+                                        <td>{$row['email']}</td>
+                                        <td>{$status}</td>
+                                      </tr>";
                             }
                         } else {
-                            echo "<li>No admins found.</li>";
+                            echo "<tr><td colspan='2'>No admins found.</td></tr>";
                         }
                         ?>
-                    </ul>
-                </div>
-                <div id="overview" class="page">
-                    <h2>Add New Admin</h2>
-                    <?php if ($_SESSION["username"] === "venti") : ?>
-                        <form method="POST" action="">
-                            <label for="new_admin_username">Username:</label>
-                            <input type="text" name="new_admin_username" required><br>
-                            <label for="new_admin_password">Password:</label>
-                            <input type="password" name="new_admin_password" required><br>
-                            <label for="new_admin_email">Email:</label>
-                            <input type="email" name="new_admin_email" required><br>
-                            <input type="submit" name="add_admin" value="Add Admin">
-                        </form>
-                    <?php else : ?>
-                        <p>Only superadmin can add new admins.</p>
-                    <?php endif; ?>
-                </div>
-                <div id="events" class="page">
-                <h1>Upload Music</h1>
-                    <form action="upload_music.php" method="post" enctype="multipart/form-data">
-                        <label for="music_name">Music Name:</label>
-                        <input type="text" name="music_name" id="music_name" required><br>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Add New Admin -->
+            <h2>Add New Admin</h2>
+            <?php if ($_SESSION["username"] === "venti") : ?>
+                <form method="POST" action="">
+                    <div class="form-group">
+                        <label for="new_admin_username">Username:</label>
+                        <input type="text" class="form-control" name="new_admin_username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_admin_password">Password:</label>
+                        <input type="password" class="form-control" name="new_admin_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_admin_email">Email:</label>
+                        <input type="email" class="form-control" name="new_admin_email" required>
+                    </div>
+                    <button class="btn btn-primary btn-submit" type="submit" name="add_admin">Add Admin</button>
+                </form>
+            <?php else : ?>
+                <p>Only superadmin can add new admins.</p>
+            <?php endif; ?>
 
-                        <label for="artist">Artist:</label>
-                        <input type="text" name="artist" id="artist" required><br>
-
-                        <label for="category">Category:</label>
-                        <input type="text" name="category" id="category" required><br>
-
-                        <input type="file" name="music_file" accept=".mp3" required><br>
-
-                        <button type="submit" name="submit">Upload</button>
-                    </form>
-                </div>
+            <!-- Disable Admin Account Form -->
+            <h1>Disable Admin Account</h1>
+            <?php if ($_SESSION["username"] === "venti") : ?>
+                <form method="POST" action="">
+                    <div class="form-group">
+                        <label for="admin_username">Admin Username:</label>
+                        <select class="form-control" name="admin_username" required>
+                            <?php
+                            mysqli_data_seek($admins_result, 0);
+                            // Populate the select element with the admin usernames
+                            if ($admins_result && $admins_result->num_rows > 0) {
+                                while ($row = $admins_result->fetch_assoc()) {
+                                    echo "<option value='{$row['username']}'>{$row['username']}</option>";
+                                }
+                                // Reset the pointer of the result set to the beginning
+                                mysqli_data_seek($admins_result, 0);
+                            } else {
+                                echo "<option value=''>No admins found.</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin_status">Status:</label>
+                        <select class="form-control" name="admin_status" required>
+                            <option value="1">Enabled</option>
+                            <option value="0">Disabled</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary btn-submit" type="submit" name="disable_admin">Update Status</button>
+                </form>
+            <?php else : ?>
+                <p>Only superadmin can disable admin accounts.</p>
+            <?php endif; ?>
+        </div>
+        <div id="overview" class="page">
+            
+        </div>
+        <div id="events" class="page">
+        <h1>Upload Music</h1>
+            <form action="upload_music.php" method="post" enctype="multipart/form-data">
+                <label for="music_name">Music Name:</label>
+                <input type="text" name="music_name" id="music_name" required><br>
+                <label for="artist">Artist:</label>
+                <input type="text" name="artist" id="artist" required><br>
+                <label for="category">Category:</label>
+                <input type="text" name="category" id="category" required><br>
+                <input type="file" name="music_file" accept=".mp3" required><br>
+                <button type="submit" name="submit">Upload</button>
+            </form>
+        </div>
                 <div id="about" class="page">
                     <h1>User List</h1>
                     <?php if ($users_result && $users_result->num_rows > 0) : ?>
@@ -366,8 +471,6 @@ $conn->close();
                         <p>No plans found.</p>
                     <?php endif; ?>
 
-                </div>
-                <div id="contact" class="page">
                     <!-- Add Plan Form -->
                     <h1>Add New Plan</h1>
                     <form method="POST" action="">
@@ -383,7 +486,14 @@ $conn->close();
                         <input type="text" name="plan_price" required><br>
                         <input type="submit" name="add_plan" value="Add Plan">
                     </form>
+                    
+                    <ul>
+                        <li class="list-item-dark">Dark background with light text</li>
+                        <li class="list-item-light">Light background with dark text</li>
+                        <li class="list-item-dark">Another dark background with light text</li>
+                    </ul>
                 </div>
+                
             </div>
         </div>
     </div>
