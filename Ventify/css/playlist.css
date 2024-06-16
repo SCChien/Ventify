@@ -1,3 +1,11 @@
+/* Clear effect of user agent stylesheet */
+html { color: #000; background: #FFF; }
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form,
+fieldset, input, textarea, p, blockquote, th, td {
+    margin: 0;
+    padding: 0;
+}
+
 .playlist {
     padding: 20px;
 }
@@ -68,6 +76,7 @@
     padding: 10px;
     font-size: 14px;
 }
+
 
 .playlist tbody td:first-child {
     width: 30px;
@@ -176,16 +185,85 @@
 
 .playlistName {
     cursor: pointer;
-    margin: 10px 0;
     padding: 5px;
-    color: #FFFFFF;
+    border-bottom: 1px solid #ccc;
+    text-decoration: none; /* 移除下划线 */
+    color: white;
 }
 .playlistName:hover {
     background-color: #333;
+    text-decoration: none; /* 确保悬停时也没有下划线 */
 }
 
 #backButton {
     margin: 20px 0;
     padding: 10px 20px;
-    background-color: #1DB954; /* Spotify*/
+    background-color: #1DB954; /* Spotify */
+}
+
+/* New CSS */
+#playlistContent {
+    margin-top: 10px;
+}
+
+#backButton {
+    margin-top: 10px;
+}
+
+.song {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.song img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.song li {
+    flex: 1;
+}
+
+.song form {
+    margin-left: 10px;
+}
+
+#playlistNames {
+    margin: 20px 0;
+}
+
+.playlistItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+    border-bottom: 1px solid #ccc; /* 添加下划线作为分割 */
+}
+
+.playlistName {
+    font-size: 18px;
+    font-weight: bold;
+    width: 100%;
+}
+
+.deleteAlbumBtn {
+    background-color: #ff4d4d;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    align-items: center;
+}
+
+.deleteAlbumBtn:hover {
+    background-color: #ff1a1a;
+}
+
+.no-song {
+    font-size: 18px;
+    color: #ff4d4d; /* Red color for visibility */
+    margin: 20px 0;
 }

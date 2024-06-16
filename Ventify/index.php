@@ -2,7 +2,6 @@
 session_start();
 
 include('./core/conn.php');
-
 if(isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
 
@@ -82,6 +81,7 @@ function saveDatabase($database) {
     <link rel="stylesheet" href="./css/font_header.css">
     <link rel="stylesheet" href="./css/font_leftBox.css">
     <link rel="stylesheet" href="css/font_footer.css">
+    <link rel="stylesheet" href="css/downsongshownbeside.css">
 </head>
 <body>
     <div class="container">
@@ -124,7 +124,7 @@ function saveDatabase($database) {
                 <ul>
                     <a href="index.php"><li><span>Home</span></li></a>
                     <a href="playlist.php"><li><span>Playlist</span></li></a>
-                    <li><span>视频</span></li>
+                    <a href="recommended song.php"><li><span>Recommended</span></li></a>
                     <li><span>关注</span></li>
                     <li><span>直播</span></li>
                     <li><span>私人FM</span></li>
@@ -216,7 +216,13 @@ function saveDatabase($database) {
                 <a href="#" id="addToPlaylist"><li class="iconfont icon-yinxiao"></li></a>
                 <li class="iconfont icon-yinliangkai _voice"></li><!---when click at this button the song will at into playlist--->
                 <li class="iconfont icon-yiqipindan"></li>
-                <li class="iconfont icon-24gl-playlistMusic"></li>
+                <li class="iconfont icon-24gl-playlistMusic" id="showDownloads"></li>
+                <div id="downloadList">
+                    <button class="close-btn">关闭</button>
+                    <h2>Downloaded Songs</h2>
+                    <ul>
+                    </ul>
+                </div>
             </ul>
         </div>
     </div>
@@ -257,5 +263,6 @@ function saveDatabase($database) {
     <script src="./js/listen.js"></script>
     <script src="./js/changeStyle.js"></script>
     <script src="./js/playlist.js"></script>
+    <script src="./js/show.js"></script>
 </body>
 </html>

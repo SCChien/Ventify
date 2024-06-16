@@ -2,35 +2,44 @@
 session_start();
 
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    echo json_encode(['success' => false, 'message' => 'User not logged in']);
     exit();
 }
 
 $username = $_SESSION['username'];
+$jsonData = file_get_contents('album.json');
+$database = json_decode($jsonData, true, 512, JSON_UNESCAPED_UNICODE);
 
-if (isset($_POST['album']) && isset($_POST['index'])) {
+if (isset($_POST['album'], $_POST['index']) && isset($database[$username]['albums'][$_POST['album']])) {
     $albumName = $_POST['album'];
-    $songIndex = (int) $_POST['index'];
-    
-    // Read JSON database
-    $jsonData = file_get_contents('album.json');
-    $database = json_decode($jsonData, true);
-    
-    // Check if album exists in the user's albums
-    if (isset($database[$username]['albums'][$albumName])) {
-        // Remove the song from the album
-        array_splice($database[$username]['albums'][$albumName], $songIndex, 1);
+    $songIndex = intval($_POST['index']);
+    if (isset($database[$username]['albums'][$albumName][$songIndex])) {
+        $song = $database[$username]['albums'][$albumName][$songIndex];
+        unset($database[$username]['albums'][$albumName][$songIndex]);
         
-        // Save the updated database back to the JSON file
-        file_put_contents('album.json', json_encode($database, JSON_PRETTY_PRINT));
-        
-        // Respond with success
+        $songFilePath = "downloads/$username/{$song['song']}.mp3";
+        if (file_exists($songFilePath)) {
+            unlink($songFilePath);
+        }
+
+        $thumbnailExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+        foreach ($thumbnailExtensions as $ext) {
+            $thumbnailPath = "downloads/$username/{$song['song']}.$ext";
+            if (file_exists($thumbnailPath)) {
+                unlink($thumbnailPath);
+            }
+        }
+
+        if (empty($database[$username]['albums'][$albumName])) {
+            unset($database[$username]['albums'][$albumName]);
+        }
+
+        file_put_contents('album.json', json_encode($database, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         echo json_encode(['success' => true]);
     } else {
-        // Album doesn't exist
-        echo json_encode(['success' => false, 'message' => 'Album not found']);
+        echo json_encode(['success' => false, 'message' => 'Song not found']);
     }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Invalid parameters']);
+    echo json_encode(['success' => false, 'message' => 'Invalid album or song index']);
 }
 ?>

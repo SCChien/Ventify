@@ -1,69 +1,102 @@
-<!-- 添加了特定用户登入时会显示特定用户的头像和username利用username获取用户id再用id获取头像 -->
 <?php
 session_start();
 
-include('./core/conn.php');
-
-// 检查用户是否登录，如果未登录则跳转到登录页面
-if(isset($_SESSION['username'])) {
-    $username = $_SESSION['username'];
-
-    $id_query = "SELECT id, pfp FROM users WHERE username = '$username'";
-    $id_result = $conn->query($id_query);
-
-    if ($id_result->num_rows == 1) {
-        // Fetch the user's ID and avatar path
-        $row = $id_result->fetch_assoc();
-        $user_id = $row['id'];
-        $avatarPath = $row['pfp'];
-    } else {
-        $avatarPath = 'default_avatar.jpg';
-    }
-} else {
-    header("Location:login.php");
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
     exit();
 }
 
-// 获取当前登录的用户名
 $username = $_SESSION['username'];
 
-// 读取 JSON 数据库
 $jsonData = file_get_contents('album.json');
-$database = json_decode($jsonData, true);
-$userPlaylist = 'album.json';
+$database = json_decode($jsonData, true, 512, JSON_UNESCAPED_UNICODE);
 
-// 检查用户是否存在于数据库中，如果不存在则创建新用户记录
-if(!isset($database[$username])) {
+if (!isset($database[$username])) {
     $database[$username] = array(
         "username" => $username,
-        "albums" => array()
+        "albums" => array("favourite" => array())
     );
 }
 
-// 处理用户的专辑操作
-if(isset($_POST['create_album'])) {
+if (!isset($database[$username]['albums']['favourite'])) {
+    $database[$username]['albums']['favourite'] = array();
+}
+
+if (isset($_POST['create_album'])) {
     $albumName = $_POST['album_name'];
-    $database[$username]['albums'][$albumName] = array();
-    saveDatabase($database);
-    echo "<p>Album '$albumName' created successfully!</p>";
-    header("Location: playlist.php");
-    exit();
+    if ($albumName !== 'favourite' && !isset($database[$username]['albums'][$albumName])) {
+        $database[$username]['albums'][$albumName] = array();
+        saveDatabase($database);
+        echo "<script>alert('Album \"$albumName\" created successfully!');window.location.href = 'playlist.php';</script>";
+    } else {
+        echo "<script>alert('Cannot create album named \"favourite\" or album already exists.');window.location.href = 'playlist.php';</script>";
+    }
 }
 
-if(isset($_POST['add_song'])) {
+if (isset($_POST['add_downloaded_song'])) {
     $albumName = $_POST['album'];
-    $songName = $_POST['song_name'];
-    $author = $_POST['author'];
-    $database[$username]['albums'][$albumName][] = "$songName, $author";
-    saveDatabase($database);
-    echo "<p>Song '$songName' added to album '$albumName' successfully!</p>";
-    header("Location: playlist.php");
-    exit();
+    $downloadedSong = $_POST['downloaded_song'];
+    $songTitle = pathinfo($downloadedSong, PATHINFO_FILENAME);
+
+    $isSongExist = false;
+    foreach ($database[$username]['albums'][$albumName] as $song) {
+        if ($song['song'] === $downloadedSong) {
+            $isSongExist = true;
+            break;
+        }
+    }
+
+    if ($isSongExist) {
+        echo "<script>alert('Song \"$downloadedSong\" is already in the album \"$albumName\".');window.location.href = 'playlist.php';</script>";
+    } else {
+        $thumbnailExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+        $thumbnail = '';
+        foreach ($thumbnailExtensions as $ext) {
+            $thumbnailPath = "downloads/$username/$songTitle.$ext";
+            if (file_exists($thumbnailPath)) {
+                $thumbnail = $thumbnailPath;
+                break;
+            }
+        }
+        if (empty($thumbnail)) {
+            $thumbnail = 'default_thumbnail.jpg';
+        }
+
+        $database[$username]['albums'][$albumName][] = array('song' => $downloadedSong, 'thumbnail' => $thumbnail);
+        saveDatabase($database);
+        echo "<script>alert('Downloaded song \"$downloadedSong\" added to album \"$albumName\" successfully!');window.location.href = 'playlist.php';</script>";
+    }
 }
 
-// 保存数据库到 JSON 文件
-function saveDatabase($database) {
-    $jsonData = json_encode($database, JSON_PRETTY_PRINT);
+if (isset($_POST['delete_song'])) {
+    $albumName = $_POST['album'];
+    $songToDelete = $_POST['song_to_delete'];
+
+    foreach ($database[$username]['albums'][$albumName] as $index => $song) {
+        if ($song['song'] === $songToDelete) {
+            unset($database[$username]['albums'][$albumName][$index]);
+            break;
+        }
+    }
+
+    saveDatabase($database);
+    echo "<script>alert('Song \"$songToDelete\" deleted from album \"$albumName\" successfully!');window.location.href = 'playlist.php';</script>";
+}
+
+function deleteAlbum($username, $albumName, &$database)
+{
+    if ($albumName !== 'favourite' && isset($database[$username]['albums'][$albumName])) {
+        unset($database[$username]['albums'][$albumName]);
+        saveDatabase($database);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function saveDatabase($database)
+{
+    $jsonData = json_encode($database, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     file_put_contents('album.json', $jsonData);
 }
 ?>
@@ -80,103 +113,99 @@ function saveDatabase($database) {
     <link rel="stylesheet" href="./css/font_leftBox.css">
     <link rel="stylesheet" href="css/font_footer.css">
     <link rel="stylesheet" href="css/playlist.css">
-    
+    <link rel="stylesheet" href="css/downsongshownbeside.css">
 </head>
 <body>
 <div class="container">
-        <!-- 头部 -->
-        <div class="header">
-            <div class="logo">
-                <img src="./image/logo.png" alt="">
-                <span>Ventify</span>
-            </div>
-
-            <div class="middle">
-                <i class="iconfont icon-jiantou-xiangzuo"></i>
-                <i class="iconfont icon-jiantou-xiangyou"></i>
-                <div class="search">
-                    <i class="iconfont icon-sousuo"><a href="searchmusic.php">Search</a></i>
-                </div>
-            </div>
-
-            <div class="other">
-                <div class="userInfo">
-                    <img src="<?php echo $avatarPath; ?>" alt="<?php echo $username; ?>">
-                    <span><?php echo $username; ?></span>
-                </div>
-                <ul>
-                    <li><a href="login.php"><i class="iconfont icon-zhuti"></i></a></li>
-                    <li><a href="userpfp.php"><i class="iconfont icon-shezhi"></i></a></li>
-                    <li><a href="premium.php"><i class="iconfont icon-xinfeng"></i></a></li>
-                </ul>
-        
+    <div class="header">
+        <div class="logo">
+            <img src="./image/logo.png" alt="">
+            <span>Ventify</span>
+        </div>
+        <div class="middle">
+            <i class="iconfont icon-jiantou-xiangzuo"></i>
+            <i class="iconfont icon-jiantou-xiangyou"></i>
+            <div class="search">
+                <i class="iconfont icon-sousuo"><a href="searchmusic.php">Search</a></i>
             </div>
         </div>
-
-        <!-- 渐变线条 -->
-        <div class="line"></div>
-
-        <!-- 中间 -->
-        <div class="main">
-            <div class="left-box">
-                <ul>
-                    <a href="index.php"><li><span>Home</span></li></a>
-                    <a href="playlist.php"><li><span>Playlist</span></li></a>
-                    <li><span>视频</span></li>
-                    <li><span>关注</span></li>
-                    <li><span>直播</span></li>
-                    <li><span>私人FM</span></li>
-                </ul>
-                <div class="my_music">
-                    <span>我的音乐</span>
-                </div>
-                <ul class="mine">
-                    <li><i class="iconfont icon-bendixiazai"></i><span>Downloaded Song</span></li>
-                    <li><i class="iconfont icon-zuijinbofang"></i><span>History</span></li>
-                    <li><i class="iconfont icon-ego-favorite"></i><span>Collection</span></li>
-                </ul>
-                <div class="create_list">
-                    <span>
-                        创建的歌单
-                        <i class="iconfont icon-ico_arrowright"></i>
-                        <i class="iconfont icon-jia i_last"></i>
-                    </span>
-                </div>
-                <div class="create_list">
-                    <span>
-                        收藏的歌单
-                        <i class="iconfont icon-ico_arrowright"></i>
-                    </span>
-                </div>
+        <div class="other">
+            <div class="userInfo">
+                <img src="<?php echo $avatarPath; ?>" alt="<?php echo $username; ?>">
+                <span><?php echo $username; ?></span>
             </div>
-            <div class="right-box"> 
-                <div class="playlist">
-                        <div class="album">
-                            <h2>Albums for <?php echo $username; ?></h2>
-                            <div id="playlistNames">
-                                <?php
-                                foreach($database[$username]['albums'] as $albumName => $playlist) {
-                                    echo "<p class='playlistName' data-album='$albumName'>$albumName</p>";
-                                }
-                                ?>
-                            </div>
-                            <div id="playlistContent" style="display: none;">
-                                
-                                <!-- 用于显示 playlist 中的歌曲 -->
-                            </div>
-                            <button id="backButton" style="display: none;">Back to Playlists</button>
-                        </div>
-                    </div>
+            <ul>
+                <li><a href="login.php"><i class="iconfont icon-zhuti"></i></a></li>
+                <li><a href="userpfp.php"><i class="iconfont icon-shezhi"></i></a></li>
+                <li><a href="premium.php"><i class="iconfont icon-xinfeng"></i></a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="line"></div>
+    <div class="main">
+        <div class="left-box">
+            <ul>
+                <a href="index.php"><li><span>Home</span></li></a>
+                <a href="playlist.php"><li><span>Playlist</span></li></a>
+                <li><span>视频</span></li>
+                <li><span>关注</span></li>
+                <li><span>直播</span></li>
+                <li><span>私人FM</span></li>
+            </ul>
+            <div class="my_music">
+                <span>我的音乐</span>
+            </div>
+            <ul class="mine">
+                <li><i class="iconfont icon-bendixiazai"></i><span>Downloaded Song</span></li>
+                <li><i class="iconfont icon-zuijinbofang"></i><span>History</span></li>
+                <li><i class="iconfont icon-ego-favorite"></i><span>Collection</span></li>
+            </ul>
+            <div class="create_list">
+                <span>
+                    创建的歌单
+                    <i class="iconfont icon-ico_arrowright"></i>
+                    <i class="iconfont icon-jia i_last"></i>
+                </span>
+            </div>
+            <div class="create_list">
+                <span>
+                收藏的歌单
+                    <i class="iconfont icon-ico_arrowright"></i>
+                </span>
             </div>
         </div>
-        
-
-        <!-- 底部 -->   
-        <div class="footer">
+        <div class="right-box">
+            <div class="playlist">
+                <h2>播放列表</h2>
+                <div id="playlistNames">
+                    <p class='playlistName' data-album='favourite'>favourite</p>
+                    <?php
+                    // 遍历用户的所有播放列表
+                    foreach ($database[$username]['albums'] as $albumName => $playlist) {
+                        if ($albumName !== 'favourite') {
+                            // 显示播放列表名称及删除按钮
+                            echo "<div class='playlistItem'>
+                                        <span class='playlistName' data-album='$albumName'>$albumName</span>
+                                        <button class='deleteAlbumBtn' data-album='$albumName' data-confirm='false'>Delete</button>
+                                    </div>";
+                        }
+                    }
+                    ?>
+                </div>
+                <div id="playlistContent" style="display: none;">
+                    <!-- 用于显示 playlist 中的歌曲 -->
+                </div>
+                <button id="backButton" style="display: none;">Back to Playlists</button>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
             <div class="ft_left">
                 <img class="_img" src="./image/main/est.jpg" alt="">
                 <div class="songNameAndSinger">
-                    <span class="songName">春夏秋冬reprise<i class="iconfont icon-aixin" id="showPopup"></i></span>
+                    <div class="songName">    
+                        <span class="song_Name">春夏秋冬reprise</span><i class="iconfont icon-aixin" id="showPopup"></i>
+                    </div>
                     <span class="singer">當山みれい</span>
                 </div>
             </div>
@@ -202,133 +231,61 @@ function saveDatabase($database) {
 
             <ul class="ft_right">
                 <li class="jigao">极高</li>
-                <li class="iconfont icon-yinxiao"></li>
+                <a href="#" id="addToPlaylist"><li class="iconfont icon-yinxiao"></li></a>
                 <li class="iconfont icon-yinliangkai _voice"></li><!---when click at this button the song will at into playlist--->
                 <li class="iconfont icon-yiqipindan"></li>
-                <li class="iconfont icon-24gl-playlistMusic"></li>
+                <li class="iconfont icon-24gl-playlistMusic" id="showDownloads"></li>
+                <div id="downloadList">
+                    <button class="close-btn">关闭</button>
+                    <h2>Downloaded Songs</h2>
+                    <ul>
+                    </ul>
+                </div>
             </ul>
         </div>
-    </div>
-    
-
-    <div id="popupWindow" class="popupWindow">
-        <span class="close">&times;</span>
-        <div class="create_album">
-            <h3>Create Album</h3>
-            <form method='post'>
+</div>
+<div id="popupWindow" class="popupWindow">
+    <span class="close">&times;</span>
+    <div class="create_album">
+        <h3>Create Album</h3>
+        <form method='post'>
             <label for='album_name'>Album Name:</label>
             <input type='text' id='album_name' name='album_name' required><br><br>
             <input type='submit' name='create_album' value='Create Album'>
-            </form>
-        </div>
-                    
-        <!-- 添加歌曲的表单 -->
-        <div class="add_song">
-            <h3>Add Song</h3>
-            <form method='post'>
-            <label for='album'>Select Album:</label>
-            <select id='album' name='album'>
-            <?php
-            foreach($database[$username]['albums'] as $albumName => $playlist) {
-                echo "<option value='$albumName'>$albumName</option>";
-            }
-            ?>
-            </select><br><br>
-            <label for='title'>Song Title:</label>
-            <input type='text' id='song_name' name='song_name' required><br><br>
-            <label for='author'>Song Author:</label>
-            <input type='text' id='author' name='author' required><br><br>
-            <input type='submit' name='add_song' value='Add Song'>
-            </form>
-        </div>
+        </form>
     </div>
-    
-    <!-- JavaScript 部分 -->
-    <script src="./js/listen.js"></script>
-    <script src="./js/changeStyle.js"></script>
-    <script src="./js/playlist.js"></script>
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const playlistNames = document.querySelectorAll('.playlistName');
-        const playlistNamesContainer = document.getElementById('playlistNames');
-        const playlistContent = document.getElementById('playlistContent');
-        const backButton = document.getElementById('backButton');
-
-        playlistNames.forEach(name => {
-            name.addEventListener('click', function() {
-                const albumName = this.getAttribute('data-album');
                 
-                fetch('get_playlist.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: `album=${albumName}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    let html = `<h3>Playlist: ${albumName}</h3>`;
-                    html += "<table>";
-                    html += "<thead>";
-                    html += "<tr>";
-                    html += "<th>#</th>";
-                    html += "<th>Song Name</th>";
-                    html += "<th>Author</th>";
-                    html += "<th>Action</th>"; <!-- Add Action column -->
-                    html += "</tr>";
-                    html += "</thead>";
-                    html += "<tbody>";
-                    
-                    data.songs.forEach((song, index) => {
-                        html += "<tr>";
-                        html += `<td>${index + 1}</td>`;
-                        html += `<td>${song.title}</td>`;
-                        html += `<td>${song.author}</td>`;
-                        html += `<td><button class="deleteSong" data-album="${albumName}" data-index="${index}">Delete</button></td>`;
-                        html += "</tr>";
-                    });
-                    
-                    html += "</tbody>";
-                    html += "</table>";
+    <!-- 添加歌曲的表单 -->
+    <div class="add_song">
+        <h2>添加已下载的歌曲到专辑</h2>
+        <form method="post">
+            <label for="album">选择专辑:</label>
+            <select id="album" name="album">
+                <?php foreach ($database[$username]['albums'] as $albumName => $playlist): ?>
+                    <option value="<?php echo $albumName; ?>"><?php echo $albumName; ?></option>
+                <?php endforeach; ?>
+            </select><br><br>
+            <label for="downloaded_song">选择已下载的歌曲:</label>
+            <select id="downloaded_song" name="downloaded_song">
+                <?php
+                $user_dir = "downloads/$username";
+                $files = scandir($user_dir);
+                foreach ($files as $file) {
+                    if (pathinfo($file, PATHINFO_EXTENSION) === 'mp3') {
+                        $safe_title = pathinfo($file, PATHINFO_FILENAME);
+                        echo "<option value='$safe_title'>$safe_title</option>";
+                    }
+                }
+                ?>
+            </select><br><br>
+            <input type="submit" name="add_downloaded_song" value="添加已下载的歌曲">
+        </form>
+    </div>
+</div>
 
-                    playlistContent.innerHTML = html;
-                    backButton.style.display = 'block';
-                    playlistNamesContainer.style.display = 'none';
-                    playlistContent.style.display = 'block';
-
-                    document.querySelectorAll('.deleteSong').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const albumName = this.getAttribute('data-album');
-                            const songIndex = this.getAttribute('data-index');
-                            
-                            fetch('delete_song.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                },
-                                body: `album=${albumName}&index=${songIndex}`
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    alert('Song deleted successfully!');
-                                    location.reload();
-                                } else {
-                                    alert('Failed to delete song.');
-                                }
-                            });
-                        });
-                    });
-                });
-            });
-        });
-
-        backButton.addEventListener('click', function() {
-            playlistContent.style.display = 'none';
-            backButton.style.display = 'none';
-            playlistNamesContainer.style.display = 'block';
-        });
-    });
-    </script> 
+<script src="js/playlist.js"></script>
+<script src="./js/show.js"></script>
+<script src="./js/listen.js"></script>
+<script src="./js/changeStyle.js"></script>
 </body>
 </html>

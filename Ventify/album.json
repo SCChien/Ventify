@@ -1,12 +1,36 @@
 {
+    "dgyt": {
+        "username": "dgyt",
+        "albums": {
+            "": [
+                {
+                    "song": "Mrs. GREEN APPLE - インフェルノ（Inferno）",
+                    "thumbnail": "default_thumbnail.jpg"
+                },
+                {
+                    "song": "Mrs. GREEN APPLE - インフェルノ（Inferno）",
+                    "thumbnail": "default_thumbnail.jpg"
+                }
+            ],
+            "venti": [
+                {
+                    "song": "Mrs. GREEN APPLE - インフェルノ（Inferno）",
+                    "thumbnail": "default_thumbnail.jpg"
+                }
+            ]
+        }
+    },
     "kelvin": {
         "username": "kelvin",
         "albums": {
+            "favourite": [],
             "test": [
-                "asd, asd",
-                "yueheng, yueheng"
+                {
+                    "song": "Reynard Silva - The way I still love you (Lyric Video)",
+                    "thumbnail": "downloads\/kelvin\/Reynard Silva - The way I still love you (Lyric Video).webp"
+                }
             ],
-            "test2": []
+            "andrew": []
         }
     }
 }

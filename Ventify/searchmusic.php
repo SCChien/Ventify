@@ -1,165 +1,158 @@
 <?php
 session_start();
-
 include('./core/conn.php');
 
-if(isset($_SESSION['username'])) {
+if (isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
 
+    // 从数据库中获取用户信息
     $id_query = "SELECT id, pfp, role FROM users WHERE username = '$username'";
     $id_result = $conn->query($id_query);
 
     if ($id_result->num_rows == 1) {
-        // Fetch the user's ID, avatar path, and role
         $row = $id_result->fetch_assoc();
         $user_id = $row['id'];
         $avatarPath = $row['pfp'];
         $userRole = $row['role'];
 
-        // Send the user's role to the frontend
         echo "<script>var userRole = '$userRole';</script>";
+
+        // 创建用户下载文件夹
+        $downloads_dir = 'downloads/';
+        $user_dir = $downloads_dir . $username;
+        if (!is_dir($user_dir)) {
+            mkdir($user_dir, 0777, true);
+        }
     } else {
         $avatarPath = 'default_avatar.jpg';
     }
 } else {
-    header("Location:login.php");
+    header("Location: login.php");
     exit();
 }
 
-$song_downloaded = false;
-$audio_player = "";
-$downloads_dir = 'downloads/';
+// 处理下载请求
+if (isset($_GET['action']) && $_GET['action'] == 'download' && isset($_GET['url']) && isset($_GET['title']) && isset($_SESSION['username'])) {
+    $url = $_GET['url'];
+    $title = $_GET['title'];
+    $username = $_SESSION['username'];
+    $user_dir = "downloads/$username";
+    $safe_title = preg_replace('/[\\/*?:"<>|]/', '', urldecode($title));
+    $file_path = "$user_dir/$safe_title.mp3";
 
-$downloaded_songs = [];
-if ($handle = opendir($downloads_dir)) {
-    while (false !== ($entry = readdir($handle))) {
-        if ($entry != "." && $entry != "..") {
-            $downloaded_songs[] = $entry;
-        }
-    }
-    closedir($handle);
-}
+    // 检查文件是否已存在，避免重复下载
+    if (!file_exists($file_path)) {
+        // 下载歌曲和封面
+        $output = shell_exec("python ytdl.py download " . escapeshellarg($url) . " " . escapeshellarg($user_dir) . " 2>&1");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (!empty($_POST["search"])) {
-        $song = escapeshellarg($_POST["search"]);
-        // Replace with the actual path to music.py script
-        $command = escapeshellcmd("python music.py " . $song);
-        $output = [];
-        $return_var = 0;
-        // Execute the command and capture the output
-        exec($command, $output, $return_var);
-        // Output the result of the Python script execution
-        $search_results = $output; // Store search results
-    } elseif (!empty($_POST["song"])) {
-        $selected_song = $_POST["song"];
-        $file_path = $downloads_dir . $selected_song;
+        // 查找封面文件
+        $thumbnail_path_array = glob("$user_dir/$safe_title.{jpg,jpeg,png,webp}", GLOB_BRACE);
+        $thumbnail_path = $thumbnail_path_array ? $thumbnail_path_array[0] : './image/main/est.jpg';
 
         if (file_exists($file_path)) {
-            if (is_readable($file_path)) {
-                $song_downloaded = true;
-                $audio_player = "<audio controls autoplay><source src='$file_path' type='audio/mp3'>Your browser does not support the audio element.</audio>";
-            } else {
-                $audio_player = "<p>File cannot be accessed. Please check file permissions.</p>";
-            }
-        } else {
-            $audio_player = "<p>File does not exist. Please check download path and server configuration.</p>";
+            // 重定向回主页面，带上下载的文件和封面信息
+            header("Location: searchmusic.php?new_song=$safe_title&thumbnail=" . urlencode($thumbnail_path));
+            exit();
         }
+    } else {
+        // 文件已存在，直接获取封面文件
+        $thumbnail_path_array = glob("$user_dir/$safe_title.{jpg,jpeg,png,webp}", GLOB_BRACE);
+        $thumbnail_path = $thumbnail_path_array ? $thumbnail_path_array[0] : './image/main/est.jpg';
+
+        // 重定向回主页面，带上下载的文件和封面信息
+        header("Location: searchmusic.php?new_song=$safe_title&thumbnail=" . urlencode($thumbnail_path));
+        exit();
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>音乐播放器</title>
-    <link rel="stylesheet" href="./css/searchmusic.css">    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IKULA</title>
     <link rel="icon" href="image/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./css/font_header.css">
     <link rel="stylesheet" href="./css/font_leftBox.css">
     <link rel="stylesheet" href="css/font_footer.css">
     <link rel="stylesheet" href="css/song_lyrics.css">
+    <link rel="stylesheet" href="css/downsongshownbeside.css">
+    <link rel="stylesheet" href="./css/searchmusic.css">
 </head>
 <body>
-
-<div class="container">
-    <!-- 头部 -->
-    <div class="header">
+<div class="header">
         <div class="logo">
-            <img src="./image/logo.png" alt="">
-            <span>Ventify</span>
+                <img src="./image/logo.png" alt="Logo">
+                <span style="color:white"><a href="index.php">Ventify</span>
+            </a>
         </div>
 
-        <div class="middle">
-            <i class="iconfont icon-jiantou-xiangzuo"></i>
-            <i class="iconfont icon-jiantou-xiangyou"></i>
-            <div class="search">
-                <i class="iconfont icon-sousuo"><a href="searchmusic.php">Search</a></i>
+            <div class="middle">
+                <i class="iconfont icon-jiantou-xiangzuo"></i>
+                <i class="iconfont icon-jiantou-xiangyou"></i>
             </div>
-        </div>
 
-
-        <div class="other">
-            <div class="userInfo">
-                <img src="<?php echo $avatarPath; ?>" alt="<?php echo $username; ?>">
-                <span><?php echo $username; ?></span>
-            </div>
-            <ul>
-                <li><a href="login.php"><i class="iconfont icon-zhuti"></i></a></li>
-                <li><a href="userpfp.php"><i class="iconfont icon-shezhi"></i></a></li>
-                <li><a href="premium.php"><i class="iconfont icon-xinfeng"></i></a></li>
-            </ul>
-    
-        </div>
-    </div>
-
-    <!-- 渐变线条 -->
-    <div class="line"></div>
-
-    <!-- 中间 -->
-    <div class="main">
-        <div class="search-box">
-            <h2>输入歌曲名以下载并播放</h2>
-            <form method="post">
-                <div class="search-bar">
-                    <input type="text" name="search" placeholder="Search" value="<?php echo isset($_POST['search']) ? htmlspecialchars($_POST['search']) : ''; ?>">
-                    <button type="submit">查找并下载</button>
+            <div class="other">
+                <div class="userInfo">
+                    <img src="<?php echo htmlspecialchars($avatarPath); ?>" alt="<?php echo htmlspecialchars($username); ?>">
+                    <span><?php echo htmlspecialchars($username); ?></span>
                 </div>
-            </form>
+                <ul>
+                    <li><a href="login.php"><i class="iconfont icon-zhuti"></i></a></li>
+                    <li><a href="userpfp.php"><i class="iconfont icon-shezhi"></i></a></li>
+                    <li><a href="premium.php"><i class="iconfont icon-xinfeng"></i></a></li>
+                </ul>
+            </div>
+    </div>
 
-            <?php if (!empty($search_results)): ?>
-                <h2>搜索结果：</h2>
-                <form method="post">
-                    <select name="song" required>
-                        <?php $count = 0; foreach ($search_results as $result): ?>
-                            <?php if ($count >= 8) break; ?>
-                            <option value="<?php echo htmlspecialchars($result); ?>"><?php echo htmlspecialchars($result); ?></option>
-                            <?php $count++; ?>
-                        <?php endforeach; ?>
-                    </select>
-                    <button type="submit">下载</button>
-                </form>
-            <?php endif; ?>
+    <h1>搜索歌曲</h1>
+    <form method="POST">
+        <input type="text" name="search_query" placeholder="输入歌曲名称">
+        <button type="submit">搜索</button>
+    </form>
 
-            <?php if ($song_downloaded || $audio_player != ""): ?>
-                <h3>正在播放: <?php echo htmlspecialchars(!empty($selected_song) ? $selected_song : $_POST["search"]); ?></h3>
-                <?php echo $audio_player; ?>
-            <?php endif; ?>
-
-            <h2>选择要播放的已下载歌曲</h2>
-            <form method="post">
-                <select name="song" required>
-                    <?php foreach ($downloaded_songs as $song): ?>
-                        <option value="<?php echo htmlspecialchars($song); ?>"><?php echo htmlspecialchars($song); ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <button type="submit">播放</button>
-            </form>
+        <!-- Modal 窗口 -->
+        <div id="myModal" class="modal" style="display:none">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1>搜索结果</h1>
+            <ul id="searchResults"></ul>
         </div>
     </div>
 
-    <!-- 底部 -->
+        <!-- 重新打开弹窗按钮 -->
+        <button id="openModalButton">打开搜索结果</button>
+
+    <!-- 播放列表 -->
+    <div class="playlist">
+        <h2>播放列表</h2>
+        <ul id="playlist">
+            <?php
+            $songs = [];
+            if (is_dir($user_dir)) {
+                $files = scandir($user_dir);
+                foreach ($files as $file) {
+                    if (pathinfo($file, PATHINFO_EXTENSION) === 'mp3') {
+                        $thumbnail_path_array = glob("$user_dir/" . pathinfo($file, PATHINFO_FILENAME) . ".{jpg,jpeg,png,webp}", GLOB_BRACE);
+                        $thumbnail_path = $thumbnail_path_array ? $thumbnail_path_array[0] : './image/main/est.jpg';
+                        $songs[] = [
+                            'title' => pathinfo($file, PATHINFO_FILENAME),
+                            'path' => "$user_dir/$file",
+                            'thumbnail' => $thumbnail_path
+                        ];
+                    }
+                }
+            }
+            foreach ($songs as $song) {
+                echo "<li><a href=\"#\" onclick=\"playSong('{$song['path']}', '{$song['title']}', '{$song['thumbnail']}')\">{$song['title']}</a></li>";
+            }
+            ?>
+        </ul>
+    </div>
+
     <div class="footer">
         <div class="ft_left">
             <img class="_img" src="./image/main/est.jpg" alt="">
@@ -185,36 +178,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <!--歌曲当前时间与总时间  -->
                 <span class="currentTime time">00:00</span>
                 <span class="duraTime time">00:00</span>
-            </div>
+           </div>
         </div>
 
         <ul class="ft_right">
             <li class="jigao">极高</li>
             <a href="#" id="addToPlaylist"><li class="iconfont icon-yinxiao"></li></a>
-            <li class="iconfont icon-yinliangkai _voice"></li><!---when click at this button the song will at into playlist--->
+            <li class="iconfont icon-yinliangkai _voice"></li>
             <li class="iconfont icon-yiqipindan"></li>
-            <!-- 图标，用于触发显示歌单 -->
-            <li class="iconfont icon-24gl-playlistMusic" onclick="toggleDownloadedSongs()"></li>
-
-            <!-- 新增的已下载歌曲列表容器 -->
-            <div id="downloadedSongsContainer">
-                <h4>Playlist</h4>
-                <ul>
-                    <?php foreach ($downloaded_songs as $song): ?>
-                        <li><?php echo htmlspecialchars($song); ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-
-
-
-
-
+            <li class="iconfont icon-24gl-playlistMusic" id="showDownloads"></li>
+                <div id="downloadList">
+                    <button class="close-btn">关闭</button>
+                    <h2>Downloaded Songs</h2>
+                    <ul>
+                    </ul>
+                </div>
         </ul>
     </div>
-</div>
-<script src="./js/listen.js"></script>
+
+    <!-- 弹出消息 -->
+    <div id="successMessage" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
+        Song added to playlist successfully.
+    </div>
+    <div id="errorMessage" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
+        Song already exists in the playlist.
+    </div>
+
+    <script src="./js/listen.js"></script>
     <script src="./js/song_lycris.js"></script>
     <script src="./js/changeStyle.js"></script>
+    <script src="./js/show.js"></script>
+    <script src="./js/ad.js"></script>
 </body>
 </html>

@@ -1,0 +1,87 @@
+/* Clear effect of user agent stylesheet */
+html { color: #000; background: #FFF; }
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form,
+fieldset, input, textarea, p, blockquote, th, td {
+    margin: 0;
+    padding: 0;
+}
+/* Additional styles for the recommend section */
+
+/* 确保 recommend-container 不会影响 header */
+.recommend-container {
+    /* 调整布局以确保容器适应内容 */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* 让容器在需要时扩展 */
+    padding: 10px;
+    box-sizing: border-box; /* 确保 padding 不会影响整体布局 */
+}
+
+
+.main {
+    flex: 1 1 auto; /* 让 main 内容区域自由扩展 */
+    overflow-y: auto; /* 确保内容过多时可以滚动 */
+}
+
+/* 调整 recommend-container 内部的子元素样式 */
+.recommend-container .item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+.recommend-container h1, .recommend-container h2 {
+    color: #1DB954;
+    margin-bottom: 20px;
+}
+
+.recommend-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recommend-container ul li {
+    color: white;
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.recommend-container ul li:last-child {
+    border-bottom: none;
+}
+
+.recommend-container ul li a {
+    color: #1DB954;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+.recommend-container ul li a:hover {
+    text-decoration: underline;
+}
+
+
+.play-list {
+    margin-top: 40px;
+}
+
+#playlist li {
+    color: white;
+    margin-bottom: 10px;
+}
+
+#playlist li a {
+    color: white;
+    text-decoration: none;
+}
+
+#playlist li a:hover {
+    text-decoration: underline;
+}
