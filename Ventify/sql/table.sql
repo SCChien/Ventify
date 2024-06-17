@@ -35,3 +35,11 @@ CREATE TABLE plans (
     price DECIMAL(10, 2) 
 );
 
+CREATE TABLE recommended_songs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    url VARCHAR(255) NOT NULL,
+    search_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (username) REFERENCES users(username)
+);

@@ -31,6 +31,35 @@ if (isset($_SESSION['username'])) {
     exit();
 }
 
+// 处理搜索请求
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_query'])) {
+    $search_query = escapeshellarg($_POST['search_query']);
+    $output = shell_exec("python ytdl.py search $search_query " . escapeshellarg($username) . " 2>&1");
+
+    if ($output === null) {
+        echo "Error: No output from Python script.";
+        exit();
+    }
+
+    $results = json_decode($output, true);
+
+    if ($results === null) {
+        echo "Error: Failed to decode JSON. Output was: " . htmlspecialchars($output);
+        exit();
+    }
+
+    ?>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            showResults(<?php echo json_encode($results); ?>);
+        });
+    </script>
+
+    <?php
+}
+
+
 // 处理下载请求
 if (isset($_GET['action']) && $_GET['action'] == 'download' && isset($_GET['url']) && isset($_GET['title']) && isset($_SESSION['username'])) {
     $url = $_GET['url'];
@@ -51,7 +80,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'download' && isset($_GET['url'
 
         if (file_exists($file_path)) {
             // 重定向回主页面，带上下载的文件和封面信息
-            header("Location: searchmusic.php?new_song=$safe_title&thumbnail=" . urlencode($thumbnail_path));
+            header("Location: testsm.php?new_song=$safe_title&thumbnail=" . urlencode($thumbnail_path));
             exit();
         }
     } else {
@@ -60,7 +89,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'download' && isset($_GET['url'
         $thumbnail_path = $thumbnail_path_array ? $thumbnail_path_array[0] : './image/main/est.jpg';
 
         // 重定向回主页面，带上下载的文件和封面信息
-        header("Location: searchmusic.php?new_song=$safe_title&thumbnail=" . urlencode($thumbnail_path));
+        header("Location: testsm.php?new_song=$safe_title&thumbnail=" . urlencode($thumbnail_path));
         exit();
     }
 }
@@ -78,7 +107,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'download' && isset($_GET['url'
     <link rel="stylesheet" href="./css/font_header.css">
     <link rel="stylesheet" href="./css/font_leftBox.css">
     <link rel="stylesheet" href="css/font_footer.css">
-    <link rel="stylesheet" href="css/song_lyrics.css">
     <link rel="stylesheet" href="css/downsongshownbeside.css">
     <link rel="stylesheet" href="./css/searchmusic.css">
 </head>
