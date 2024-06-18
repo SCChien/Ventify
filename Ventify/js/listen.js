@@ -1,76 +1,81 @@
-// 播放对象
-let audio = document.querySelector('#ado')
+// 获取全局音频播放器
+let audio = document.querySelector('#ado');
 // 播放按钮
-const _audio = document.querySelector('._audio')
-const _voice = document.querySelector('._voice')
+const _audio = document.querySelector('._audio');
+const _voice = document.querySelector('._voice');
 
-// 音频设置
-audio.src = "./audio/3.mp3"
-audio.controls = false
-audio.loop = true
-audio.volume = 0.3
+// 播放列表数据
+let songs = [];
+let recommendedSongs = [
+    { path: './audio/4.mp3', title: '夜に駆ける', thumbnail: './image/main/silasila.jpg', artist: 'YOASOBI' },
+    { path: './audio/Call your name.mp3', title: 'Call your name', thumbnail: './image/main/callYourName.jpg', artist: '李阿亚' },
+    { path: './audio/wanjiang.mp3', title: '万疆', thumbnail: './image/main/bocchi.jpg', artist: '李玉刚' },
+    { path: './audio/lo1.mp3', title: 'アムリタ', thumbnail: './image/main/smadick.jpg', artist: '牧野由依' },
+    { path: './audio/3.mp3', title: '群青', thumbnail: './image/main/aaaaaa.jpg', artist: 'YOASOBI' }
+];
+
+let currentSongIndex = 0;
+
+// 初始化音频设置
+audio.controls = false;
+audio.loop = false; // 禁用循环播放，以便使用自定义的下一首逻辑
+audio.volume = 0.3;
 
 // 播放开始与暂停以及相关的图标字体修改
 function bofang() {
     if (audio.paused) {
-        audio.play()
-        _audio.classList.remove('icon-bofang')
-        _audio.classList.add('icon-zanting')
+        audio.play();
+        _audio.classList.remove('icon-bofang');
+        _audio.classList.add('icon-zanting');
     } else {
-        audio.pause()
-        _audio.classList.remove('icon-zanting')
-        _audio.classList.add('icon-bofang')
+        audio.pause();
+        _audio.classList.remove('icon-zanting');
+        _audio.classList.add('icon-bofang');
     }
 }
 
 // 是否静音与相关的图标字体修改
 _voice.addEventListener('click', () => {
     if (audio.muted) {
-        audio.muted = false
-        _voice.classList.remove('icon-yinliangguanbi')
-        _voice.classList.add('icon-yinliangkai')
+        audio.muted = false;
+        _voice.classList.remove('icon-yinliangguanbi');
+        _voice.classList.add('icon-yinliangkai');
     } else {
-        audio.muted = true
-        _voice.classList.remove('icon-yinliangkai')
-        _voice.classList.add('icon-yinliangguanbi')
+        audio.muted = true;
+        _voice.classList.remove('icon-yinliangkai');
+        _voice.classList.add('icon-yinliangguanbi');
     }
-})
+});
 
-// 一上来先调一次初始化函数
-changeSong()
-
-// 将audio的初始化函数封装
+// 初始化播放功能
 function changeSong() {
-    // 获取音频时长
     if (audio != null) {
-        audio.load()
+        audio.load();
         audio.oncanplay = function () {
-            let duraTime = document.querySelector('.duraTime')
-            duraTime.innerHTML = transTime(audio.duration)
+            let duraTime = document.querySelector('.duraTime');
+            duraTime.innerHTML = transTime(audio.duration);
         }
     }
 
-    // 格式化时间格式
     function transTime(time) {
-        let duration = parseInt(time)
-        let minute = parseInt(duration / 60)
-        let sec = (duration % 60) + ''
-        let isM0 = ':'
+        let duration = parseInt(time);
+        let minute = parseInt(duration / 60);
+        let sec = (duration % 60) + '';
+        let isM0 = ':';
         if (minute == 0) {
-            minute = '00'
+            minute = '00';
         } else if (minute < 10) {
-            minute = "0" + minute
+            minute = "0" + minute;
         }
         if (sec.length == 1) {
-            sec = "0" + sec
+            sec = "0" + sec;
         }
-        return minute + isM0 + sec
+        return minute + isM0 + sec;
     }
 
-    // 时长进度条
     const progress = document.querySelector(".progress");
     const slide = document.querySelector(".slide");
-    const fill = document.querySelector(".fill")
+    const fill = document.querySelector(".fill");
     audio.ontimeupdate = function () {
         let l = (audio.currentTime / audio.duration) * 100;
         slide.style.left = l + "%";
@@ -84,149 +89,110 @@ function changeSong() {
         duraTime.innerHTML = transTime(audio.duration);
     };
 
-    // 进度条拖动
     slide.onmousedown = function (e) {
-        let x = e.clientX - this.offsetLeft
+        let x = e.clientX - this.offsetLeft;
         document.onmousemove = function (e) {
-            let jlx = ((e.clientX - x) / progress.clientWidth) * 100
+            let jlx = ((e.clientX - x) / progress.clientWidth) * 100;
             if (jlx <= 100 && jlx >= 0) {
-                slide.style.left = jlx + "%"
+                slide.style.left = jlx + "%";
             }
-            audio.currentTime = (jlx / 100) * audio.duration
+            audio.currentTime = (jlx / 100) * audio.duration;
         }
         document.onmouseup = function () {
-            document.onmousemove = null
-            document.onmouseup = null
+            document.onmousemove = null;
+            document.onmouseup = null;
         }
     }
     slide.ontouchstart = function (e) {
-        let x = e.targetTouches[0].clientX - this.offsetLeft
+        let x = e.targetTouches[0].clientX - this.offsetLeft;
         document.ontouchmove = function (e) {
-            let jlx = ((e.targetTouches[0].clientX - x) / progress.clientWidth) * 100
+            let jlx = ((e.targetTouches[0].clientX - x) / progress.clientWidth) * 100;
             if (jlx <= 100 && jlx >= 0) {
-                slide.style.left = jlx + '%'
+                slide.style.left = jlx + '%';
             }
-            audio.currentTime = (jlx / 100) * audio.duration
+            audio.currentTime = (jlx / 100) * audio.duration;
         }
         document.ontouchend = function (e) {
-            document.ontouchmove = null
-            document.ontouchend = null
+            document.ontouchmove = null;
+            document.ontouchend = null;
         }
     }
 }
 
-// right_box > .navigation 修改right_box 导航栏部分样式1
-
-const items = document.querySelectorAll('.navigation li')
-function setActive() {
-    items.forEach((items) => {
-        items.classList.remove('active')
-    })
-    this.classList.add('active')
-    current_tag.innerText = this.innerText
+// 切换到指定索引的歌曲
+function playSongByIndex(index) {
+    const song = songs[index];
+    audio.src = song.path;
+    document.querySelector('.songName').textContent = song.title;
+    document.querySelector('._img').src = song.thumbnail;
+    document.querySelector('.singer').textContent = song.artist;
+    audio.play();
+    savePlaybackState(index, audio.currentTime);
 }
 
-items.forEach((items) => {
-    items.addEventListener('click', setActive)
-})
-
-// 获取推荐歌曲  切歌功能
-const image = document.querySelector('._img')
-const recm_list = document.querySelectorAll('.recm_list ul li')
-const audio_list = ['4', 'Call your name', 'wanjiang', 'lo1', '3']
-const image_list = ['silasila', 'callYourName', 'bocchi', 'smadick', 'aaaaaa']
-// ftleft 切哥后对应的图片歌名和歌手名称也需要切换
-const songName = document.querySelector('.songName')
-const singer = document.querySelector('.singer')
-const songAndSinger_list = [
-    ['夜に駆ける','YOASOBI'],
-    ['Call your name','李阿亚'],
-    ['万疆','李玉刚'],
-    ['アムリタ','牧野由依'],
-    ['群青','YOASOBI']
-]
-
-for (let i = 0; i < recm_list.length; i++) {
-    recm_list[i].addEventListener('click', function() {
-        audio.src = "./audio/" + audio_list[i] + ".mp3"
-        image.src = "./image/main/" + image_list[i] + ".jpg"
-        songName.innerHTML = songAndSinger_list[i][0] + '<i class="iconfont icon-aixin"></i>'
-        singer.innerHTML = songAndSinger_list[i][1]
-        changeSong()
-        audio.play()
-    })
-}
-
-// Get references to the necessary elements
-const nextSongButton = document.querySelector('.icon-xiayigexiayishou');
-
-// Define an array of song URLs
-const songs = [
-    'audio/3.mp3',
-    'audio/4.mp3',
-    'audio/Call your name.mp3',
-    'audio/lo1.mp3',
-    'audio/wanjiang.mp3',
-    'audio/novipuser.mp3'
-];
-
-// Track the index of the current song
-let currentSongIndex = 0;
-
-// Function to play the next song
+// 切换到下一首歌曲
 function playNextSong() {
-    currentSongIndex = (currentSongIndex + 1) % songs.length; // Increment index and loop back to 0 if necessary
-    audio.src = songs[currentSongIndex]; // Set the audio source to the next song
-    audio.play(); // Play the next song
+    currentSongIndex = (currentSongIndex + 1) % songs.length;
+    playSongByIndex(currentSongIndex);
+}
 
-    // Update the artist, singer, and image
-    updateArtistAndSinger(currentSongIndex);
-    updateImage(currentSongIndex);
+// 切换到上一首歌曲
+function playPrevSong() {
+    currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+    playSongByIndex(currentSongIndex);
+}
 
-    // Check the user's role and play additional audio if necessary
-    if (userRole !== 'VIP Family,VIP Individual,VIP Student') {
-    audio.onended = function() {
-        audio.src = "Ventify/audio/novipuser.mp3";
-        audio.play().catch(function(error) {
-            console.error('Error playing novipuser.mp3:', error);
-        });
+// 保存播放状态到 localStorage
+function savePlaybackState(index, currentTime) {
+    localStorage.setItem('currentSongIndex', index);
+    localStorage.setItem('currentTime', currentTime);
+}
+
+// 从 localStorage 恢复播放状态
+function restorePlaybackState() {
+    const savedIndex = localStorage.getItem('currentSongIndex');
+    const savedTime = localStorage.getItem('currentTime');
+    if (savedIndex !== null) {
+        currentSongIndex = parseInt(savedIndex);
+        playSongByIndex(currentSongIndex);
+        if (savedTime !== null) {
+            audio.currentTime = parseFloat(savedTime);
+        }
     }
-
-    // Add error event listener
-    audio.onerror = function(event) {
-        console.error('Audio error:', event);
-    };
-}
 }
 
+// 页面卸载时保存播放状态
+window.addEventListener('beforeunload', () => {
+    savePlaybackState(currentSongIndex, audio.currentTime);
+});
 
-// Add event listener to the next song button
-nextSongButton.addEventListener('click', playNextSong);
+// 添加事件监听器到“下一首”和“上一首”按钮
+document.querySelector('.next').addEventListener('click', playNextSong);
+document.querySelector('.prev').addEventListener('click', playPrevSong);
 
-// Function to update the artist and singer information
-function updateArtistAndSinger(index) {
-    const songName = document.querySelector('.songName');
-    const singer = document.querySelector('.singer');
+// 加载推荐歌曲到播放列表
+recommendedSongs.forEach(song => {
+    songs.push(song);
+    const li = document.createElement('li');
+    li.innerHTML = `<a href="#" onclick="playSongByIndex(${songs.length - 1})">${song.title}</a>`;
+    document.getElementById('playlist').appendChild(li);
+});
 
-    // Array of artist and singer names corresponding to each song
-    const artistAndSingerList = [
-        ['夜に駆ける', 'YOASOBI'],
-        ['Call your name', '李阿亚'],
-        ['万疆', '李玉刚'],
-        ['アムリタ', '牧野由依'],
-        ['群青', 'YOASOBI']
-    ];
+// 加载下载的歌曲并添加到播放列表
+window.onload = function () {
+    fetch('get_downloads.php')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(song => {
+                songs.push(song);
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="#" onclick="playSongByIndex(${songs.length - 1})">${song.title}</a>`;
+                document.getElementById('playlist').appendChild(li);
+            });
+            // 恢复播放状态
+            restorePlaybackState();
+        });
 
-    // Update the song name, artist, and singer
-    songName.innerHTML = `${artistAndSingerList[index][0]} <i class="iconfont icon-aixin"></i>`;
-    singer.innerHTML = `${artistAndSingerList[index][1]}`;
-}
-
-// Function to update the image
-function updateImage(index) {
-    const image = document.querySelector('._img');
-    const imageList = ['silasila', 'callYourName', 'bocchi', 'smadick', 'aaaaaa'];
-
-    // Update the image source
-    image.src = `./image/main/${imageList[index]}.jpg`;
-}
+    // 设置歌曲结束时播放下一首
+    audio.onended = playNextSong;
+};

@@ -1,6 +1,14 @@
+/* Clear effect of user agent stylesheet */
+html { color: #000; background: #FFF; }
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form,
+fieldset, input, textarea, p, blockquote, th, td {
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(to right, #ffafbd, #ffc3a0);
+    background: #434343;
     margin: 0;
     padding: 0;
 }
@@ -118,31 +126,31 @@ button[type="submit"]:hover {
 }
 
 /* Playlist styles */
-.playlist {
+.playlist1 {
     margin: 20px;
 }
 
-.playlist h2 {
+.playlist1 h2 {
     text-align: center;
     color: #333;
 }
 
-.playlist ul {
+.playlist1 ul {
     list-style: none;
     padding: 0;
 }
 
-.playlist ul li {
+.playlist1 ul li {
     padding: 10px;
     border-bottom: 1px solid #ccc;
 }
 
-.playlist ul li a {
+.playlist1 ul li a {
     text-decoration: none;
     color: #007bff;
 }
 
-.playlist ul li a:hover {
+.playlist1 ul li a:hover {
     text-decoration: underline;
 }
 

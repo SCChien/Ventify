@@ -26,9 +26,14 @@ def search_music(song_name, username):
         results = []
         for entry in info_dict['entries'][:20]:  # 取前20个结果
             video_title = entry['title']
+            video_url = entry['webpage_url']
+            video_duration = entry.get('duration', 0)  # 获取视频时长
+            video_thumbnail = entry.get('thumbnail')  # 获取视频缩略图
             results.append({
                 'title': video_title,
-                'url': entry['webpage_url']
+                'url': video_url,
+                'duration': video_duration,
+                'thumbnail': video_thumbnail
             })
         # 保存前3个结果到数据库
         for entry in info_dict['entries'][:3]:

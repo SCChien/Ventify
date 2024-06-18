@@ -8,7 +8,6 @@ $success_message = "";
 $error_message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Check if the form is a registration form
     if (isset($_POST["reg_username"]) && isset($_POST["reg_password"]) && isset($_POST["telephone"]) && isset($_POST["email"])) {
         // Registration process
         $reg_username = $_POST["reg_username"];
@@ -16,30 +15,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $telephone = $_POST["telephone"];
         $email = $_POST["email"];
 
-        // Hash the password before storing
-        $hashed_password = password_hash($reg_password, PASSWORD_DEFAULT);
-
-        // Check if the username or email is already taken
-        $check_query = "SELECT * FROM users WHERE username = '$reg_username' OR email = '$email'";
-        $check_result = $conn->query($check_query);
-
-        if ($check_result->num_rows == 0) {
-            // Insert new user into the database
-            $insert_query = "INSERT INTO users (username, password, telephone, email, role) VALUES ('$reg_username', '$hashed_password', '$telephone', '$email', 'NORMAL USER')";
-            if ($conn->query($insert_query) === TRUE) {
-                // Set success message for registration
-                $success_message = "Registration successful!";
-            } else {
-                // Display an error message for database error
-                $error_message = "Error: " . $conn->error;
-            }
+        if (strlen($reg_password) < 6) {
+            $error_message = "Passwords cannot be less than 6 characters.";
         } else {
-            // Check if the duplicate is due to username or email
-            $row = $check_result->fetch_assoc();
-            if ($row['username'] == $reg_username) {
-                $error_message = "Username already taken. Please choose another username.";
+            // Hash the password before storing
+            $hashed_password = password_hash($reg_password, PASSWORD_DEFAULT);
+
+            // Check if the username or email is already taken
+            $check_query = "SELECT * FROM users WHERE username = '$reg_username' OR email = '$email'";
+            $check_result = $conn->query($check_query);
+
+            if ($check_result->num_rows == 0) {
+                // Insert new user into the database
+                $insert_query = "INSERT INTO users (username, password, telephone, email, role) VALUES ('$reg_username', '$hashed_password', '$telephone', '$email', 'NORMAL USER')";
+                if ($conn->query($insert_query) === TRUE) {
+                    // Set success message for registration
+                    $success_message = "Registration successful!";
+                } else {
+                    // Display an error message for database error
+                    $error_message = "Error: " . $conn->error;
+                }
             } else {
-                $error_message = "Email already registered. Please use another email.";
+                // Check if the duplicate is due to username or email
+                $row = $check_result->fetch_assoc();
+                if ($row['username'] == $reg_username) {
+                    $error_message = "Username already taken. Please choose another username.";
+                } else {
+                    $error_message = "Email already registered. Please use another email.";
+                }
             }
         }
     } else {
@@ -86,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($admin_result->num_rows > 0) {
                     $admin = $admin_result->fetch_assoc();
                     // Verify the hashed password
-                    if (password_verify($password, $admin['password']) && $admin['status'] == 1) {
+                    if (password_verify($password, $admin['password'])) {
                         // Start a session and store the username
                         $_SESSION["username"] = $username;
 
@@ -97,13 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         exit(); // Ensure that script execution stops after redirection
                     } else {
                         // Display an error message for invalid credentials
-                        if($admin['status'] != 1) {
-                            echo"<script>alert('This admin account already unactive. Please contact with superadmin'); window.location.href = 'login.php';</script>";
-                            
-                        }else {
-                            $error_message = "Invalid username or password for admin";
-                        }
-                        
+                        $error_message = "Invalid username or password for admin";
                     }
                 } else {
                     $error_message = "Invalid username or password";
@@ -124,7 +121,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="./css/login.css">
 </head>
 <body>
-<div class="container">
+<header>
+  <a href="#"><img src="./image/icon_white.png"><span>entify</span></a>
+</header>
+<div class="back">
+    <h3></h3>
+</div>
+<div class="container" >
         <div class="register-box">
             <h2 class="register-title">
                 <span>No Have,Go</span>Register

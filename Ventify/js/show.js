@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 let downloadListDiv = document.getElementById('downloadList');
-                downloadListDiv.innerHTML = '<button class="close-btn">关闭</button><h2>Downloaded Songs</h2>'; // 清空之前的内容并添加关闭按钮和标题
+                downloadListDiv.innerHTML = '<button class="close-btn">Close</button><h2>Downloaded Songs</h2>'; // 清空之前的内容并添加关闭按钮和标题
                 downloadListDiv.style.display = 'block'; // 显示下载列表
                 data.forEach(song => {
                     let songElement = document.createElement('div');
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var modal = document.getElementById('myModal');
     var openModalButton = document.getElementById('openModalButton');
     // 获取 <span> 元素，用于关闭模态框
-    var span = document.getElementsByClassName('close')[0];
+    var span = document.getElementsByClassName('close1')[0];
 
     // 当用户点击 <span> (x), 关闭模态框
     span.onclick = function() {

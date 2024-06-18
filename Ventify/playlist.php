@@ -1,14 +1,32 @@
 <?php
 session_start();
+include('./core/conn.php');
+if(isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
 
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    $id_query = "SELECT id, pfp, role FROM users WHERE username = '$username'";
+    $id_result = $conn->query($id_query);
+
+    if ($id_result->num_rows == 1) {
+        // Fetch the user's ID, avatar path, and role
+        $row = $id_result->fetch_assoc();
+        $user_id = $row['id'];
+        $avatarPath = $row['pfp'];
+        $userRole = $row['role'];
+
+        // Send the user's role to the frontend
+        echo "<script>var userRole = '$userRole';</script>";
+    } else {
+        $avatarPath = 'default_avatar.jpg';
+    }
+} else {
+    header("Location:login.php");
     exit();
 }
 
 $username = $_SESSION['username'];
 
-$jsonData = file_get_contents('album.json');
+$jsonData = file_get_contents('./sql/album.json');
 $database = json_decode($jsonData, true, 512, JSON_UNESCAPED_UNICODE);
 
 if (!isset($database[$username])) {
@@ -97,7 +115,7 @@ function deleteAlbum($username, $albumName, &$database)
 function saveDatabase($database)
 {
     $jsonData = json_encode($database, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    file_put_contents('album.json', $jsonData);
+    file_put_contents('./sql/album.json', $jsonData);
 }
 ?>
 <!DOCTYPE html>
@@ -114,69 +132,66 @@ function saveDatabase($database)
     <link rel="stylesheet" href="css/font_footer.css">
     <link rel="stylesheet" href="css/playlist.css">
     <link rel="stylesheet" href="css/downsongshownbeside.css">
+    <script src="https://kit.fontawesome.com/4ad611b6f2.js" crossorigin="anonymous"></script>
 </head>
 <body>
 <div class="container">
-    <div class="header">
-        <div class="logo">
-            <img src="./image/logo.png" alt="">
-            <span>Ventify</span>
+<div class="header">
+<div class="logo">
+                <img src="./image/logo.png" alt="Logo">
+                <span style="color:white"><a href="index.php">Ventify</span>
+            </a>
         </div>
-        <div class="middle">
-            <i class="iconfont icon-jiantou-xiangzuo"></i>
-            <i class="iconfont icon-jiantou-xiangyou"></i>
-            <div class="search">
-                <i class="iconfont icon-sousuo"><a href="searchmusic.php">Search</a></i>
+
+            <div class="middle">
+                <div class="search">
+                    <i class="iconfont icon-sousuo"><a href="searchmusic.php">Search</a></i>
+                </div>
             </div>
-        </div>
-        <div class="other">
-            <div class="userInfo">
-                <img src="<?php echo $avatarPath; ?>" alt="<?php echo $username; ?>">
-                <span><?php echo $username; ?></span>
-            </div>
-            <ul>
-                <li><a href="login.php"><i class="iconfont icon-zhuti"></i></a></li>
-                <li><a href="userpfp.php"><i class="iconfont icon-shezhi"></i></a></li>
-                <li><a href="premium.php"><i class="iconfont icon-xinfeng"></i></a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="line"></div>
-    <div class="main">
-        <div class="left-box">
-            <ul>
-                <a href="index.php"><li><span>Home</span></li></a>
-                <a href="playlist.php"><li><span>Playlist</span></li></a>
-                <li><span>视频</span></li>
-                <li><span>关注</span></li>
-                <li><span>直播</span></li>
-                <li><span>私人FM</span></li>
-            </ul>
-            <div class="my_music">
-                <span>我的音乐</span>
-            </div>
-            <ul class="mine">
-                <li><i class="iconfont icon-bendixiazai"></i><span>Downloaded Song</span></li>
-                <li><i class="iconfont icon-zuijinbofang"></i><span>History</span></li>
-                <li><i class="iconfont icon-ego-favorite"></i><span>Collection</span></li>
-            </ul>
-            <div class="create_list">
-                <span>
-                    创建的歌单
-                    <i class="iconfont icon-ico_arrowright"></i>
-                    <i class="iconfont icon-jia i_last"></i>
-                </span>
-            </div>
-            <div class="create_list">
-                <span>
-                收藏的歌单
-                    <i class="iconfont icon-ico_arrowright"></i>
-                </span>
+
+
+            <div class="other">
+                <a href="userpfp.php"><div class="userInfo">
+                    <img src="<?php echo $avatarPath; ?>" alt="<?php echo $username; ?>">
+                    <span><?php echo $username; ?></span>
+                </div></a>
+                <ul>
+                    <li><a href="login.php"><i class="fa-solid fa-right-from-bracket"></i></i></a></li>
+                </ul>
+        
             </div>
         </div>
+
+        <!-- 渐变线条 -->
+        <div class="line"></div>
+
+        <!-- 中间 -->
+        <div class="main">
+            <div class="left-box">
+                <ul>
+                    <a href="index.php"><li><span>Home</span></li></a>
+                    <a href="playlist.php"><li><span>Playlist</span></li></a>
+                    <a href="recommended song.php"><li><span>Recommended</span></li></a>
+                    <a href="userpfp.php"><li><span>Profile</span></li></a>
+                    <a href="premium.php"><li><span>Premium</span></li></a>
+                </ul>
+                <div class="my_music">
+                    <span></span>
+                </div>
+                <ul class="mine">
+                    <li><i class="iconfont icon-bendixiazai"></i><span>Downloaded Song</span></li>
+                    
+                </ul>
+                
+            </div>
+            <div class="playlist" style="display : none">
+                <ul id="playlist">
+                    <!-- 播放列表由 JavaScript 动态生成 -->
+                </ul>
+            </div>
         <div class="right-box">
             <div class="playlist">
-                <h2>播放列表</h2>
+                <h2>Playlist</h2>
                 <div id="playlistNames">
                     <p class='playlistName' data-album='favourite'>favourite</p>
                     <?php
@@ -200,50 +215,46 @@ function saveDatabase($database)
         </div>
     </div>
     <div class="footer">
-            <div class="ft_left">
-                <img class="_img" src="./image/main/est.jpg" alt="">
-                <div class="songNameAndSinger">
-                    <div class="songName">    
-                        <span class="song_Name">春夏秋冬reprise</span><i class="iconfont icon-aixin" id="showPopup"></i>
+        <div class="ft_left">
+            <img class="_img" src="./image/main/est.jpg" alt="">
+            <div class="songNameAndSinger">
+            <div class="song_Name">    
+                        <span class="songName">春夏秋冬reprise</span><i class="iconfont icon-aixin" id="showPopup"></i>
                     </div>
-                    <span class="singer">當山みれい</span>
-                </div>
+                <span class="singer">當山みれい</span>
             </div>
-
-            <div class="ft_main">
-                <!-- 播放栏工具 -->
-                <ul class="tool_list">
-                    <li><i class="iconfont icon-lajitong"></i></li>
-                    <li><i class="iconfont icon-shangyishoushangyige"></i></li>
-                    <li onclick="bofang()"><i class="iconfont icon-bofang _audio"></i><audio id="ado"></audio></i></li>
-                    <li><i class="iconfont icon-xiayigexiayishou"></i></li>
-                    <li><i class="iconfont icon-geciweidianji"></i></li>
-                </ul>
-                <!-- 进度条 -->
-                <div class="progress">                   
-                    <div class="slide"></div>
-                    <div class="fill"> </div>                  
-                    <!--歌曲当前时间与总时间  -->
-                    <span class="currentTime time">00:00</span>
-                    <span class="duraTime time">00:00</span>
-               </div>
-            </div>
-
-            <ul class="ft_right">
-                <li class="jigao">极高</li>
-                <a href="#" id="addToPlaylist"><li class="iconfont icon-yinxiao"></li></a>
-                <li class="iconfont icon-yinliangkai _voice"></li><!---when click at this button the song will at into playlist--->
-                <li class="iconfont icon-yiqipindan"></li>
-                <li class="iconfont icon-24gl-playlistMusic" id="showDownloads"></li>
-                <div id="downloadList">
-                    <button class="close-btn">关闭</button>
-                    <h2>Downloaded Songs</h2>
-                    <ul>
-                    </ul>
-                </div>
-            </ul>
         </div>
-</div>
+
+        <div class="ft_main">
+            <!-- 播放栏工具 -->
+            <ul class="tool_list">
+                <li class="prev"><i class="iconfont icon-shangyishoushangyige"></i></li>
+                <li onclick="bofang()"><i class="iconfont icon-bofang _audio"></i><audio id="ado"></audio></li>
+                <li class="next"><i class="iconfont icon-xiayigexiayishou"></i></li>
+            </ul>
+            <!-- 进度条 -->
+            <div class="progress">                   
+                <div class="slide"></div>
+                <div class="fill"></div>                  
+                <!--歌曲当前时间与总时间  -->
+                <span class="currentTime time">00:00</span>
+                <span class="duraTime time">00:00</span>
+            </div>
+        </div>
+
+        <ul class="ft_right">
+            <li class="iconfont icon-yinliangkai _voice"></li>
+            <li class="iconfont icon-yiqipindan" onclick="showSharePopup()"></li>
+            <li class="iconfont icon-24gl-playlistMusic" id="showDownloads"></li>
+            <div id="downloadList">
+                <button class="close-btn">关闭</button>
+                <h2>Downloaded Songs</h2>
+                <ul></ul>
+            </div>
+        </ul>
+    </div>
+
+
 <div id="popupWindow" class="popupWindow">
     <span class="close">&times;</span>
     <div class="create_album">
@@ -283,9 +294,23 @@ function saveDatabase($database)
     </div>
 </div>
 
-<script src="js/playlist.js"></script>
-<script src="./js/show.js"></script>
-<script src="./js/listen.js"></script>
-<script src="./js/changeStyle.js"></script>
+<!-- 分享和接受歌曲弹窗 -->
+<div id="sharePopup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; padding: 20px; border: 1px solid #000000; z-index: 9999;">
+        <button onclick="generateToken()">Generate Share Token</button>
+        <br>
+        <input type="text" id="tokenInput" placeholder="Enter Token">
+        <button onclick="acceptSong()">Received Friend Song</button>
+        <button onclick="closePopup()">Close</button>
+        <div id="downloadArea" style="margin-top: 20px;"></div>
+    </div>
+
+
+
+    <script src="./js/listen.js"></script>
+    <script src="./js/playlist.js"></script>
+    <script src="./js/changeStyle.js"></script>
+    <script src="./js/show.js"></script>
+    <script src="./js/sharefriend.js"></script>
+    <script src="./js/ad.js"></script>
 </body>
 </html>

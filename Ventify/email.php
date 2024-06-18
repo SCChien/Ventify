@@ -6,6 +6,7 @@ use PHPMailer\PHPMailer\Exception;
 require 'vendor/autoload.php';
 include('./core/conn.php');
 
+
 // 处理邮件发送逻辑
 if(isset($_POST['submit'])){
     $to = $_POST['to'];
@@ -15,11 +16,16 @@ if(isset($_POST['submit'])){
     
     if ($result->num_rows > 0) {
         // 如果存在匹配的记录，发送邮件
+        $token = bin2hex(random_bytes(16)); // 生成随机令牌
+        $expires = date('Y-m-d H:i:s', strtotime('+5 minutes')); // 令牌5分钟后过期
+        $sql = "UPDATE users SET reset_token = '$token', reset_token_expires = '$expires' WHERE email = '$to'";
+        $conn->query($sql);
+
         $subject = "Password Reset";
         $message = '<html><body>';
         $message .= '<h1>Password Reset</h1>';
         $message .= '<p>To reset your password, click the link below:</p>';
-        $message .= '<p><a href="http://localhost/Final%20Year%20Project/FYP/Ventify/Ventify/rspass.php?email=' . urlencode($to) . '">Reset Password</a></p>';
+        $message .= '<p><a href="http://localhost/Final%20Year%20Project/FYP/Ventify/Ventify/rspass.php?token=' . urlencode($token) . '">Reset Password</a></p>';
         $message .= '</body></html>';
         
         $mail = new PHPMailer(true);
@@ -53,6 +59,7 @@ if(isset($_POST['submit'])){
     $conn->close(); // 关闭数据库连接
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -64,6 +71,12 @@ if(isset($_POST['submit'])){
     <title>Password Reset</title>
 </head>
 <body>
+<header>
+  <a href="index.php"><img src="./image/icon_white.png"><span>entify</span></a>
+</header>
+<div class="back">
+    <h3></h3>
+</div>
     <div class="container">
         <h1>Password Reset</h1>
         <?php if (isset($_SESSION['message'])): ?>

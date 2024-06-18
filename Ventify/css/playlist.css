@@ -114,6 +114,10 @@ fieldset, input, textarea, p, blockquote, th, td {
     color: #FFFFFF; /* Light text */
 }
 
+.popupWindow form{
+    display: block;
+}
+
 /* Close button styles */
 .popupWindow .close {
     position: absolute;

@@ -18,4 +18,24 @@ register_title.addEventListener('click',()=>{
     }
 })
 
+document.addEventListener("DOMContentLoaded", function() {
+    const registerForm = document.querySelector('form[action*="register"]');
+    const passwordInput = document.getElementById("reg_password");
+    const confirmPasswordInput = document.querySelector('input[placeholder="Confirm Password"]');
 
+    registerForm.addEventListener("submit", function(event) {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (password.length < 6) {
+            alert("密码不能少于6位字符。");
+            event.preventDefault();
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            alert("密码和确认密码不匹配。");
+            event.preventDefault();
+        }
+    });
+});

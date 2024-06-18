@@ -7,7 +7,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 $username = $_SESSION['username'];
-$jsonData = file_get_contents('album.json');
+$jsonData = file_get_contents('./sql/album.json');
 $database = json_decode($jsonData, true, 512, JSON_UNESCAPED_UNICODE);
 
 if (isset($_POST['album']) && isset($database[$username]['albums'][$_POST['album']])) {

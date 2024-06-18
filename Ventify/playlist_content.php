@@ -14,7 +14,7 @@ if (empty($albumName)) {
     exit();
 }
 
-$jsonData = file_get_contents('album.json');
+$jsonData = file_get_contents('./sql/album.json');
 $database = json_decode($jsonData, true, 512, JSON_UNESCAPED_UNICODE);
 $user_dir = "downloads/$username";
 $files = scandir($user_dir);

@@ -22,12 +22,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ]);
     
         $username = $_SESSION['username'];
-    
+        $conn->query("SET foreign_key_checks = 0");
         // Update user's role
         $sql_update_role = "UPDATE users SET role='VIP Individual' WHERE username='$username'";
         if ($conn->query($sql_update_role) === TRUE) {
             // Insert payment record
-            $sql_insert_payment = "INSERT INTO payment (user_id, amount) VALUES ((SELECT id FROM users WHERE username='$username'), 3)";
+            $sql_insert_payment = "INSERT INTO payment (user_id, amount, plan_id) VALUES ((SELECT id FROM users WHERE username='$username'), 3, 1)";
             if ($conn->query($sql_insert_payment) === TRUE) {
                 echo "<script>alert('Payment successful! You are now a VIP member.'); window.location.href = 'index.php';</script>";
             } else {
@@ -36,6 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             echo "Error updating user's role: " . $conn->error;
         }
+        $conn->query("SET foreign_key_checks = 1");
     } catch (\Stripe\Exception\CardException $e) {
         echo 'Payment failed. ' . $e->getError()->message;
     }    
@@ -51,6 +52,12 @@ $conn->close();
     <meta charset="UTF-8" />
 </head>
 <body>
+<header>
+  <a href="index.php"><img src="./image/icon_white.png"><span>entify</span></a>
+</header>
+<div class="back">
+    <h3></h3>
+</div>
 
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
     <p>Ventify Premium Individual</p>

@@ -1,36 +1,17 @@
 {
-    "dgyt": {
-        "username": "dgyt",
-        "albums": {
-            "": [
-                {
-                    "song": "Mrs. GREEN APPLE - インフェルノ（Inferno）",
-                    "thumbnail": "default_thumbnail.jpg"
-                },
-                {
-                    "song": "Mrs. GREEN APPLE - インフェルノ（Inferno）",
-                    "thumbnail": "default_thumbnail.jpg"
-                }
-            ],
-            "venti": [
-                {
-                    "song": "Mrs. GREEN APPLE - インフェルノ（Inferno）",
-                    "thumbnail": "default_thumbnail.jpg"
-                }
-            ]
-        }
-    },
     "kelvin": {
         "username": "kelvin",
         "albums": {
-            "favourite": [],
-            "test": [
+            "favourite": [
                 {
                     "song": "Reynard Silva - The way I still love you (Lyric Video)",
                     "thumbnail": "downloads\/kelvin\/Reynard Silva - The way I still love you (Lyric Video).webp"
+                },
+                {
+                    "song": "蘇星婕 - 悲傷劇情『我和你最終陷入悲傷劇情，凋落的不止落葉還有約定，過往的碎片畫面如影隨形，就再一次確定 我們只剩曾經。』【動態歌詞MV】",
+                    "thumbnail": "downloads\/kelvin\/蘇星婕 - 悲傷劇情『我和你最終陷入悲傷劇情，凋落的不止落葉還有約定，過往的碎片畫面如影隨形，就再一次確定 我們只剩曾經。』【動態歌詞MV】.jpg"
                 }
-            ],
-            "andrew": []
+            ]
         }
     }
 }

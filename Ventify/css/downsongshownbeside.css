@@ -1,16 +1,29 @@
+/* 公共样式 */
+/*Clear effect of user agent stylesheet*/
+html{color:#000;background:#FFF;}   
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,   
+fieldset,input,textarea,p,blockquote,th,td {   
+margin:0;   
+padding:0;   
+} 
+
 #downloadList {
     display: none;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #ffffff;
-    padding: 20px;
-    border: 1px solid #000000;
+    background-color: #434343 !important;/* 背景色 */
+    color: #fff; /* 文字颜色 */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     z-index: 9999;
     width: 80%;
-    height: 80%;
+    max-width: 600px;
+    max-height: 80%;
     overflow-y: auto;
+    padding: 20px;
 }
 .song-item {
     display: flex;
@@ -23,17 +36,61 @@
     height: 50px;
     margin-right: 10px;
 }
-.close-btn {
+
+#downloadList h2 {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+#downloadList ul {
+    list-style: none;
+    padding: 0;
+}
+
+#downloadList ul li {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+#downloadList ul li:last-child {
+    border-bottom: none;
+}
+
+#downloadList ul li img {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+#downloadList ul li span {
+    flex: 1;
+}
+
+#downloadList ul li a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+#downloadList ul li a:hover {
+    text-decoration: underline;
+}
+
+#downloadList .close-btn {
+    background-color: #ff0000; /* 按钮背景色 */
+    color: white; /* 按钮文字颜色 */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
     position: absolute;
     top: 10px;
     right: 10px;
-    cursor: pointer;
-    font-size: 18px;
-    background: #ff0000;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
 }
 
-
+#downloadList .close-btn:hover {
+    background-color: #cc0000;
+}

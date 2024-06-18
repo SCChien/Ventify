@@ -92,11 +92,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["promote_admin"])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_plan"])) {
     $plan_title = $_POST["plan_title"];
     $plan_description = $_POST["plan_description"];
-    $plan_start_date = $_POST["plan_start_date"];
-    $plan_end_date = $_POST["plan_end_date"];
+    $plan_duration = $_POST["plan_duration"];
     $plan_price = $_POST["plan_price"];
 
-    $insert_plan_query = "INSERT INTO plans (title, description, start_date, end_date, price) VALUES ('$plan_title', '$plan_description', '$plan_start_date', '$plan_end_date', '$plan_price')";
+    $insert_plan_query = "INSERT INTO plans (title, description, duration, price) VALUES ('$plan_title', '$plan_description', '$plan_duration', '$plan_price')";
 
     if ($conn->query($insert_plan_query) === TRUE) {
         // 使用重定向来防止重复提交
@@ -107,15 +106,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_plan"])) {
     }
 }
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["edit_plan"])) {
     $plan_id = $_POST["plan_id"];
     $plan_title = $_POST["plan_title"];
     $plan_description = $_POST["plan_description"];
-    $plan_start_date = $_POST["plan_start_date"];
-    $plan_end_date = $_POST["plan_end_date"];
+    $plan_duration = $_POST["plan_duration"];
     $plan_price = $_POST["plan_price"];
 
-    $update_plan_query = "UPDATE plans SET title = '$plan_title', description = '$plan_description', start_date = '$plan_start_date', end_date = '$plan_end_date', price = '$plan_price' WHERE plan_id = '$plan_id'";
+    $update_plan_query = "UPDATE plans SET title = '$plan_title', description = '$plan_description', duration = '$plan_duration', price = '$plan_price' WHERE plan_id = '$plan_id'";
 
     if ($conn->query($update_plan_query) === TRUE) {
         // 使用重定向来防止重复提交
@@ -126,57 +125,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["edit_plan"])) {
     }
 }
 
+
 // 新增删除计划处理逻辑
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_plan"])) {
     $plan_id = $_POST["plan_id"];
     $delete_plan_query = "DELETE FROM plans WHERE plan_id = '$plan_id'";
 
-    if ($conn->query($delete_plan_query) === TRUE) {
-        // 使用重定向来防止重复提交
-        header("Location: admin.php?status=delete_success");
-        exit();
-    } else {
-        $error_message = "Error: " . $conn->error;
-    }
-}
-
-// Handle the form submission to update the status of the selected admin account
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["disable_admin"])) {
-    // Check if current user is superadmin
-    if ($_SESSION["username"] === "venti") {
-        // Ensure admin_username and admin_status are set
-        if(isset($_POST["admin_username"]) && isset($_POST["admin_status"])){
-            $admin_username = $_POST["admin_username"];
-            $admin_status = $_POST["admin_status"];
-
-            // Prepare the update query
-            $update_status_query = "UPDATE admin SET status = ? WHERE username = ?";
-            
-            // Prepare and bind parameters
-            $stmt = $conn->prepare($update_status_query);
-            $stmt->bind_param("is", $admin_status, $admin_username);
-
-            // Execute the update query
-            if ($stmt->execute()) {
-                // Set success message
-                echo"<script>alert('Admin status have been updated'); window.location.href = 'admin.php';</script>";
-            } else {
-                // Display error message for database error
-                $error_message = "Error updating admin account status: " . $stmt->error;
-            }
-
-            // Close statement
-            $stmt->close();
+    try {
+        if ($conn->query($delete_plan_query) === TRUE) {
+            // 使用重定向来防止重复提交
+            header("Location: admin.php?status=delete_success");
+            exit();
         } else {
-            // Display error message if admin_username or admin_status is not set
-            $error_message = "Admin username or status not provided.";
+            $error_message = "Error: " . $conn->error;
         }
-    } else {
-        // Display error message for non-superadmin users trying to disable admin accounts
-        $error_message = "Only superadmin can disable admin accounts.";
+    } catch (mysqli_sql_exception $e) {
+        if ($e->getCode() == 1451) { // Foreign key constraint violation
+            $error_message = "This plan cannot be deleted as it is associated with user payments.";
+        } else {
+            $error_message = "Error: " . $e->getMessage();
+        }
     }
 }
-
 
 // Fetch all plans from the database
 $plans_query = "SELECT * FROM plans";
@@ -186,7 +156,6 @@ $plans_result = $conn->query($plans_query);
 $users_query = "SELECT * FROM users";
 $users_result = $conn->query($users_query);
 // Close database connection
-
 $conn->close();
 ?>
 
@@ -271,22 +240,38 @@ $conn->close();
                 <?php if (isset($payments_result)) : ?>
                     <h2>User Payments</h2>
                     <div class="table-container">
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-bordered ">
                             <thead>
                                 <tr>
                                     <th>Username</th>
                                     <th>Amount</th>
                                     <th>Payment Date</th>
+                                    <th>Plan</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
                                 if ($payments_result && $payments_result->num_rows > 0) {
                                     while ($row = $payments_result->fetch_assoc()) {
+                                        $plan_id = $row['plan_id'];
+                                        $plan_name = $row['title'];
+                                        $custom_plan_names = array(
+                                            '1' => 'VIP Individual',
+                                            '2' => 'VIP Student',
+                                            '3' => 'VIP Family',
+                                            // 添加更多自定义计划
+                                        );        
+                                        // 如果计划名称为空，尝试使用自定义计划名称
+                                        if (empty($plan_name) && isset($custom_plan_names[$plan_id])) {
+                                            $plan_name = $custom_plan_names[$plan_id];
+                                        } elseif (empty($plan_name)) {
+                                            $plan_name = 'Unknown Plan';
+                                        }
                                         echo "<tr>
                                                 <td>{$row['username']}</td>
                                                 <td>{$row['amount']}</td>
                                                 <td>{$row['payment_date']}</td>
+                                                <td>{$plan_name}</td>
                                               </tr>";
                                     }
                                 } else {
@@ -395,57 +380,41 @@ $conn->close();
                 <p>Only superadmin can disable admin accounts.</p>
             <?php endif; ?>
         </div>
-        <div id="overview" class="page">
-            
+    
+     <div id="about" class="page">
+         <h1>User List</h1>
+         <?php if ($users_result && $users_result->num_rows > 0) : ?>
+             <table>
+                 <tr>
+                     <th>User ID</th>
+                     <th>Username</th>
+                     <th>Email</th>
+                     <th>Telephone</th>
+                     <th>Role</th>
+                 </tr>
+                 <?php while ($row = $users_result->fetch_assoc()) : ?>
+                     <tr>
+                            <td><?php echo isset($row['id']) ? $row['id'] : ''; ?></td>
+                            <td><?php echo isset($row['username']) ? $row['username'] : ''; ?></td>
+                            <td><?php echo isset($row['email']) ? $row['email'] : ''; ?></td>
+                            <td><?php echo isset($row['telephone']) ? $row['telephone'] : ''; ?></td>
+                            <td><?php echo isset($row['role']) ? $row['role'] : ''; ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                </table>
+            <?php else : ?>
+                <p>No users found.</p>
+            <?php endif; ?>
         </div>
-        <div id="events" class="page">
-        <h1>Upload Music</h1>
-            <form action="upload_music.php" method="post" enctype="multipart/form-data">
-                <label for="music_name">Music Name:</label>
-                <input type="text" name="music_name" id="music_name" required><br>
-                <label for="artist">Artist:</label>
-                <input type="text" name="artist" id="artist" required><br>
-                <label for="category">Category:</label>
-                <input type="text" name="category" id="category" required><br>
-                <input type="file" name="music_file" accept=".mp3" required><br>
-                <button type="submit" name="submit">Upload</button>
-            </form>
-        </div>
-                <div id="about" class="page">
-                    <h1>User List</h1>
-                    <?php if ($users_result && $users_result->num_rows > 0) : ?>
-                        <table>
-                            <tr>
-                                <th>User ID</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Telephone</th>
-                                <th>Role</th>
-                            </tr>
-                            <?php while ($row = $users_result->fetch_assoc()) : ?>
-                                <tr>
-                                    <td><?php echo isset($row['id']) ? $row['id'] : ''; ?></td>
-                                    <td><?php echo isset($row['username']) ? $row['username'] : ''; ?></td>
-                                    <td><?php echo isset($row['email']) ? $row['email'] : ''; ?></td>
-                                    <td><?php echo isset($row['telephone']) ? $row['telephone'] : ''; ?></td>
-                                    <td><?php echo isset($row['role']) ? $row['role'] : ''; ?></td>
-                                </tr>
-                            <?php endwhile; ?>
-                        </table>
-                    <?php else : ?>
-                        <p>No users found.</p>
-                    <?php endif; ?>
-                </div>
-                <div id="services" class="page">
-                    <h1>Plans List</h1>
+        <div id="services" class="page">
+            <h1>Plans List</h1>
                     <?php if ($plans_result && $plans_result->num_rows > 0) : ?>
                         <table>
                             <tr>
                                 <th>Plan ID</th>
                                 <th>Title</th>
                                 <th>Description</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
+                                <th>Duration (days)</th>
                                 <th>Price</th>
                                 <th>Actions</th>
                             </tr>
@@ -453,11 +422,10 @@ $conn->close();
                                 <tr>
                                     <form method="POST" action="">
                                         <td><?php echo isset($row['plan_id']) ? $row['plan_id'] : ''; ?></td>
-                                        <td><input type="text" name="plan_title" value="<?php echo isset($row['title']) ? $row['title'] : ''; ?>"></td>
-                                        <td><textarea name="plan_description"><?php echo isset($row['description']) ? $row['description'] : ''; ?></textarea></td>
-                                        <td><input type="date" name="plan_start_date" value="<?php echo isset($row['start_date']) ? $row['start_date'] : ''; ?>"></td>
-                                        <td><input type="date" name="plan_end_date" value="<?php echo isset($row['end_date']) ? $row['end_date'] : ''; ?>"></td>
-                                        <td><input type="text" name="plan_price" value="<?php echo isset($row['price']) ? $row['price'] : ''; ?>"></td>
+                                        <td><input type="text" name="plan_title" value="<?php echo isset($row['title']) ? $row['title'] : ''; ?>" style="color: black;"></td>
+                                        <td><textarea name="plan_description" style="color: black;"><?php echo isset($row['description']) ? $row['description'] : ''; ?></textarea></td>
+                                        <td><input type="number" name="plan_duration" value="<?php echo isset($row['duration']) ? $row['duration'] : ''; ?>" style="color: black;"></td>
+                                        <td><input type="text" name="plan_price" value="<?php echo isset($row['price']) ? $row['price'] : ''; ?>" style="color: black;"></td>
                                         <td>
                                             <input type="hidden" name="plan_id" value="<?php echo isset($row['plan_id']) ? $row['plan_id'] : ''; ?>">
                                             <input type="submit" name="edit_plan" value="Save">
@@ -467,33 +435,36 @@ $conn->close();
                                 </tr>
                             <?php endwhile; ?>
                         </table>
-                    <?php else : ?>
-                        <p>No plans found.</p>
-                    <?php endif; ?>
-
-                    <!-- Add Plan Form -->
-                    <h1>Add New Plan</h1>
-                    <form method="POST" action="">
-                        <label for="plan_title">Title:</label>
-                        <input type="text" name="plan_title" required><br>
-                        <label for="plan_description">Description:</label>
-                        <textarea name="plan_description" required></textarea><br>
-                        <label for="plan_start_date">Start Date:</label>
-                        <input type="date" name="plan_start_date" required><br>
-                        <label for="plan_end_date">End Date:</label>
-                        <input type="date" name="plan_end_date" required><br>
-                        <label for="plan_price">Price:</label>
-                        <input type="text" name="plan_price" required><br>
-                        <input type="submit" name="add_plan" value="Add Plan">
-                    </form>
-                    
-                    <ul>
-                        <li class="list-item-dark">Dark background with light text</li>
-                        <li class="list-item-light">Light background with dark text</li>
-                        <li class="list-item-dark">Another dark background with light text</li>
-                    </ul>
+            <?php else : ?>
+                <p>No plans found.</p>
+            <?php endif; ?>
+            <?php if (!empty($error_message)) : ?>
+                <div class="alert alert-danger">
+                    <?php echo $error_message; ?>
                 </div>
-                
+            <?php endif; ?>                  
+            <?php if (!empty($success_message)) : ?>
+                <div class="alert alert-success">
+                    <?php echo $success_message; ?>
+                </div>
+            <?php endif; ?>
+
+         <!-- Add Plan Form -->
+         <h1>Add New Plan</h1>
+                <form method="POST" action="">
+                    <label for="plan_title">Title:</label>
+                    <input type="text" name="plan_title" required><br>
+                    <label for="plan_description">Description:</label>
+                    <textarea name="plan_description" required></textarea><br>
+                    <label for="plan_duration">Duration (days):</label>
+                    <input type="number" name="plan_duration" required><br>
+                    <label for="plan_price">Price:</label>
+                    <input type="text" name="plan_price" required><br>
+                    <input type="submit" name="add_plan" value="Add Plan">
+                </form>
+
+            </div>
+            
             </div>
         </div>
     </div>

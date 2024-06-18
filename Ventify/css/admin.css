@@ -119,7 +119,7 @@ form select {
     border-radius: 4px;
     font-size: 14px;
     background-color: #1e1e1e; /* Dark input background */
-    color: #d1d1d1; /* Light gray text color */
+    color: black !important; 
 }
 
 form button[type="submit"], 

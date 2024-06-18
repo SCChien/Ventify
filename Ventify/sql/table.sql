@@ -7,7 +7,7 @@ CREATE TABLE users (
     pfp VARCHAR(255),
     role VARCHAR(255),
     reset_token VARCHAR(255),
-    token_expires DATETIME
+    reset_token_expires DATETIME
 );
 
 
@@ -23,15 +23,15 @@ CREATE TABLE payment (
     user_id INT,
     amount DECIMAL(10, 2) NOT NULL,
     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (plan_id) REFERENCES plans(plan_id)
 );
 
 CREATE TABLE plans (
     plan_id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    start_date DATE,
-    end_date DATE,
+    duration INT,
     price DECIMAL(10, 2) 
 );
 
@@ -42,4 +42,11 @@ CREATE TABLE recommended_songs (
     url VARCHAR(255) NOT NULL,
     search_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (username) REFERENCES users(username)
+);
+
+CREATE TABLE song_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

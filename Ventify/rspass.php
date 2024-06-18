@@ -1,10 +1,28 @@
 <?php
 include('./core/conn.php');
 
+$token = null;
 $email = null;
 
-if (isset($_GET['email'])) {
-    $email = str_replace("%40", "@", $_GET['email']);
+if (isset($_GET['token'])) {
+    $token = $_GET['token'];
+
+    $sql = "SELECT email, reset_token_expires FROM users WHERE reset_token = '$token'";
+    $result = $conn->query($sql);
+    
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $email = $row['email'];
+        $expires = $row['reset_token_expires'];
+
+        if (strtotime($expires) < time()) {
+            header("Location: token_expired.php");
+            exit;
+        }
+    } else {
+        header("Location: error_page.php");
+        exit;
+    }
 } else {
     header("Location: error_page.php");
     exit;
@@ -12,30 +30,34 @@ if (isset($_GET['email'])) {
 
 $message = "";
 
-if (isset($_POST['submit'])) {
-    $new_password = $_POST['new_password'];
-    $confirm_password = $_POST['confirm_password'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['submit'])) {
+        $new_password = $_POST['new_password'];
+        $confirm_password = $_POST['confirm_password'];
 
-    if ($new_password !== $confirm_password) {
-        $message = "Passwords do not match";
-    } else {
-        // 对密码进行哈希处理
-        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-
-        $sql = "UPDATE users SET password = '$hashed_password' WHERE email = '$email'";
-
-        if ($conn->query($sql) === TRUE) {
-            if ($conn->affected_rows > 0) {
-                $message = "Password updated successfully!";
-            } else {
-                $message = "No rows updated!";
-            }
+        if (strlen($new_password) < 6) {
+            $message = "密码不能少于6位字符。";
+        } elseif ($new_password !== $confirm_password) {
+            $message = "Passwords do not match";
         } else {
-            $message = "Error updating password: " . $conn->error;
-        }
-    }
+            // 对密码进行哈希处理
+            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
 
-    echo "<script>alert('$message');</script>";
+            $sql = "UPDATE users SET password = '$hashed_password', reset_token = NULL, reset_token_expires = NULL WHERE email = '$email'";
+
+            if ($conn->query($sql) === TRUE) {
+                if ($conn->affected_rows > 0) {
+                    $message = "Password updated successfully!";
+                } else {
+                    $message = "No rows updated!";
+                }
+            } else {
+                $message = "Error updating password: " . $conn->error;
+            }
+        }
+
+        echo "<script>alert('$message');</script>";
+    }
 }
 ?>
 
@@ -50,9 +72,15 @@ if (isset($_POST['submit'])) {
 </head>
 
 <body>
+<header>
+  <a href="index.php"><img src="./image/icon_white.png"><span>entify</span></a>
+</header>
+<div class="back">
+    <h3></h3>
+</div>
     <div class="container">
         <h2>Reset Your Password</h2>
-        <form method="post">
+        <form method="post" onsubmit="return validateForm()">
             <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
             <p>
                 <label for="new_password">New Password:</label>
@@ -66,6 +94,8 @@ if (isset($_POST['submit'])) {
         </form>
         <button class="back-to-login" onclick="window.location.href='login.php'">Back to Login</button>
     </div>
+
+    <script src="./js/rspass.js"></script>
 </body>
 
 </html>

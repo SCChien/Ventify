@@ -65,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['card_number'])) {
         $update_role_query = "UPDATE users SET role = '$plan_title' WHERE username = '$username'";
 
         // Insert payment record
-        $insert_payment_query = "INSERT INTO payment (user_id, amount, payment_date) VALUES ('$user_id', '$plan_price', NOW())";
+        $insert_payment_query = "INSERT INTO payment (user_id, amount, payment_date, plan_id) VALUES ('$user_id', '$plan_price', NOW(),'$plan_id')";
 
         if ($conn->query($update_role_query) === TRUE && $conn->query($insert_payment_query) === TRUE) {
             echo "<script>alert('Payment successful! You are now a VIP member.'); window.location.href = 'index.php';</script>";
@@ -90,6 +90,12 @@ $conn->close();
     <title>Payment</title>
 </head>
 <body>
+<header>
+  <a href="index.php"><img src="./image/icon_white.png"><span>entify</span></a>
+</header>
+<div class="back">
+    <h3></h3>
+</div>
     <p>您選擇的計劃：</p>
     <h2><?php echo htmlspecialchars($plan_title); ?></h2>
     <p>價格：$<?php echo htmlspecialchars($plan_price); ?></p>

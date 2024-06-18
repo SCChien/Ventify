@@ -1,3 +1,32 @@
+/* 公共样式 */
+/*Clear effect of user agent stylesheet*/
+html{color:#000;background:#FFF;}   
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,   
+fieldset,input,textarea,p,blockquote,th,td {   
+margin:0;   
+padding:0;   
+} 
+
+header {
+    background-color: black; /* Background color */
+    color: #fff; /* Text color */
+    padding: 20px; /* Padding */
+    padding-left: 3%;
+    text-align: left; /* Center-align text */
+    font-size: 37px;
+}
+header a{
+    color: white;
+    text-decoration: none;
+}
+header img{
+  width: 80px;
+  height: 80px;
+}
+header span{
+  font-family: "Times New Roman";
+}
+
 *{
     margin: 0;
     padding: 0;
@@ -5,10 +34,10 @@
 body{
     min-height: 100vh;
     /* 弹性布局 居中 */
-    display: flex;
+    display: absolute;
     justify-content: center;
     align-items: center;
-    background-color: #94bfb560;
+    background-color: #434343;
 }
 .container{
     background-color: #222;
@@ -16,7 +45,9 @@ body{
     height: 550px;
     border-radius: 15px;
     overflow: hidden;
-    position: relative;
+    position: absolute;
+    margin-left: 40% !important;
+    margin-top: 10px;
 }
 .container::after{
     content: "";
@@ -25,7 +56,7 @@ body{
     left: 0;
     bottom: 0;
     right: 0;
-    background: url("../image/bg.jpg") no-repeat;
+    background-color: #323235;
     background-size: 500px;
     background-position: bottom top;
     opacity: 0.8;
@@ -42,13 +73,13 @@ body{
 }
 .register-title,
 .login-title{
-    color: #fff;
+    color: green;
     font-size: 27px;
     text-align: center;
 }
 .register-title span,
 .login-title span{
-    color: rgba(0,0,0,0.4);
+    color: green;
     display: none;
 }
 .register-box .input-box,
