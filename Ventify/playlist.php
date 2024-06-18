@@ -179,7 +179,7 @@ function saveDatabase($database)
                     <span></span>
                 </div>
                 <ul class="mine">
-                    <li><i class="iconfont icon-bendixiazai"></i><span>Downloaded Song</span></li>
+                    <li id="showDownloads"><i class="iconfont icon-bendixiazai"></i><span>Downloaded Song</span></li>
                     
                 </ul>
                 
@@ -258,9 +258,9 @@ function saveDatabase($database)
 <div id="popupWindow" class="popupWindow">
     <span class="close">&times;</span>
     <div class="create_album">
-        <h3>Create Album</h3>
+        <h3>Create Playlist</h3>
         <form method='post'>
-            <label for='album_name'>Album Name:</label>
+            <label for='album_name'>Playlist Name:</label>
             <input type='text' id='album_name' name='album_name' required><br><br>
             <input type='submit' name='create_album' value='Create Album'>
         </form>
@@ -268,15 +268,15 @@ function saveDatabase($database)
                 
     <!-- 添加歌曲的表单 -->
     <div class="add_song">
-        <h2>添加已下载的歌曲到专辑</h2>
+        <h2>Add to Playlist</h2>
         <form method="post">
-            <label for="album">选择专辑:</label>
+            <label for="album">Select Playlist:</label>
             <select id="album" name="album">
                 <?php foreach ($database[$username]['albums'] as $albumName => $playlist): ?>
                     <option value="<?php echo $albumName; ?>"><?php echo $albumName; ?></option>
                 <?php endforeach; ?>
             </select><br><br>
-            <label for="downloaded_song">选择已下载的歌曲:</label>
+            <label for="downloaded_song">Select Downloaded Song:</label>
             <select id="downloaded_song" name="downloaded_song">
                 <?php
                 $user_dir = "downloads/$username";
@@ -289,7 +289,7 @@ function saveDatabase($database)
                 }
                 ?>
             </select><br><br>
-            <input type="submit" name="add_downloaded_song" value="添加已下载的歌曲">
+            <input type="submit" name="add_downloaded_song" value="Add Downloaded Song">
         </form>
     </div>
 </div>

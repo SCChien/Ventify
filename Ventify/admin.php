@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit_display"])) {
     $display_option = $_POST["display_option"];
     if ($display_option == "user_payments") {
         // Display user payments
-        $payments_query = "SELECT users.username, payment.amount, payment.payment_date FROM users INNER JOIN payment ON users.id = payment.user_id";
+        $payments_query = "SELECT users.username, payment.amount, payment.payment_date,payment.plan_id,plans.title FROM users INNER JOIN payment ON users.id = payment.user_id LEFT JOIN plans ON payment.plan_id = plans.plan_id ";
         $payments_result = $conn->query($payments_query);
     } elseif ($display_option == "total_payment") {
         // Calculate total payment amount
@@ -451,7 +451,7 @@ $conn->close();
 
          <!-- Add Plan Form -->
          <h1>Add New Plan</h1>
-                <form method="POST" action="">
+                <form method="POST" action="" class="add-plan-form">
                     <label for="plan_title">Title:</label>
                     <input type="text" name="plan_title" required><br>
                     <label for="plan_description">Description:</label>

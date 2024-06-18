@@ -24,25 +24,9 @@ if (isset($_SESSION['username'])) {
 }
 
 // Fetch plans from the database
-$plans_query = "SELECT plan_id, title, description, price, start_date, end_date FROM plans";
+$plans_query = "SELECT plan_id, title, description, price, duration FROM plans";
 $plans_result = $conn->query($plans_query);
 
-// Function to calculate the duration between two dates
-function calculateDuration($start_date, $end_date) {
-    $start = new DateTime($start_date);
-    $end = new DateTime($end_date);
-    $interval = $start->diff($end);
-
-    if ($interval->y > 0) {
-        return $interval->y . ' year' . ($interval->y > 1 ? 's' : '');
-    } elseif ($interval->m > 0) {
-        return $interval->m . ' month' . ($interval->m > 1 ? 's' : '');
-    } elseif ($interval->d > 0) {
-        return $interval->d . ' day' . ($interval->d > 1 ? 's' : '');
-    } else {
-        return 'Less than a day';
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -74,7 +58,6 @@ function calculateDuration($start_date, $end_date) {
                   $plan_class = 'planItem--free';
               }
 
-              $duration = calculateDuration($plan['start_date'], $plan['end_date']);
 
               echo "<div class='planItem $plan_class'>";
               echo "<div class='card'>";
@@ -87,7 +70,7 @@ function calculateDuration($start_date, $end_date) {
               echo "</div>";
               echo "<div class='card__desc'>" . $plan['description'] . "</div>";
               echo "</div>";
-              echo "<div class='price'>RM" . $plan['price'] . "<span> / " . $duration . "</span></div>";
+              echo "<div class='price'>RM" . $plan['price'] . "<span> / " . $plan['duration'] . " days </span></div>";
               echo "<form action='planspay.php' method='POST'>";
               echo "<input type='hidden' name='plan_id' value='" . $plan['plan_id'] . "'>";
               echo "<input type='hidden' name='plan_price' value='" . $plan['price'] . "'>";

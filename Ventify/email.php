@@ -72,7 +72,7 @@ if(isset($_POST['submit'])){
 </head>
 <body>
 <header>
-  <a href="index.php"><img src="./image/icon_white.png"><span>entify</span></a>
+  <a href="login.php"><img src="./image/icon_white.png"><span>entify</span></a>
 </header>
 <div class="back">
     <h3></h3>

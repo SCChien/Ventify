@@ -1,3 +1,4 @@
+
 header {
     background-color: black; /* Background color */
     color: #fff; /* Text color */
@@ -5,7 +6,6 @@ header {
     padding-left: 3%;
     text-align: left; /* Center-align text */
     font-size: 37px;
-    width: 100%;
 }
 header a{
     color: white;
@@ -25,18 +25,20 @@ body {
     font-family: 'Montserrat', sans-serif;
     background-color: #434343;
     color: #FFFFFF;
-    display: flex;
+    display: absolute;
     align-items: center;
     height: 100vh;
 }
 
 .container {
-    background-color: #434343;
+    background-color: #1c1c1c;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: 300px;
     text-align: center;
+    margin-left: 38% !important;
+    margin-top: 10px;
 }
 
 h2 {

@@ -125,7 +125,7 @@ form select {
 form button[type="submit"], 
 form input[type="submit"] {
     background: #4b4b4b; /* Dark button background */
-    color: #ffffff; /* White text color */
+    color: #ffffff !important; /* White text color */
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
@@ -136,6 +136,36 @@ form button[type="submit"]:hover,
 form input[type="submit"]:hover {
     background: #37474f;
 }
+
+.add-plan-form input[type="text"], 
+.add-plan-form input[type="password"], 
+.add-plan-form input[type="email"], 
+.add-plan-form input[type="number"], 
+.add-plan-form textarea, 
+.add-plan-form select {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #555; /* Darker border color */
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #1e1e1e; /* Dark input background */
+    color: #ffffff !important; /* White text color */
+}
+
+.add-plan-form input[type="submit"] {
+    background: #4b4b4b; /* Dark button background */
+    color: #ffffff; /* White text color */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.add-plan-form input[type="submit"]:hover {
+    background: #37474f;
+}
+
 
 table {
     width: 100%;

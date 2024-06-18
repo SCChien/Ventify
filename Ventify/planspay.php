@@ -96,9 +96,9 @@ $conn->close();
 <div class="back">
     <h3></h3>
 </div>
-    <p>您選擇的計劃：</p>
+    <p>Your Plan:</p>
     <h2><?php echo htmlspecialchars($plan_title); ?></h2>
-    <p>價格：$<?php echo htmlspecialchars($plan_price); ?></p>
+    <p>Price: $<?php echo htmlspecialchars($plan_price); ?></p>
     <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
         <input type="hidden" name="plan_id" value="<?php echo htmlspecialchars($plan_id); ?>">
         <input type="hidden" name="plan_price" value="<?php echo htmlspecialchars($plan_price); ?>">
@@ -119,7 +119,7 @@ $conn->close();
             <input type="text" id="cvc" name="cvc" required>
         </div>
 
-        <button type="submit">確認付款</button>
+        <button type="submit">Confirm</button>
     </form>
 </body>
 </html>

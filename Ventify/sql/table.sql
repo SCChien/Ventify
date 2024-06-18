@@ -23,6 +23,7 @@ CREATE TABLE payment (
     user_id INT,
     amount DECIMAL(10, 2) NOT NULL,
     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    plan_id INT,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (plan_id) REFERENCES plans(plan_id)
 );

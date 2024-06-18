@@ -222,7 +222,7 @@ function saveDatabase($database)
                     <span></span>
                 </div>
                 <ul class="mine">
-                    <li><i class="iconfont icon-bendixiazai"></i><span>Downloaded Song</span></li>
+                    <li id="showDownloads"><i class="iconfont icon-bendixiazai"></i><span>Downloaded Song</span></li>
                     
                 </ul>
                 
@@ -310,12 +310,12 @@ function saveDatabase($database)
             </div>
         </ul>
     </div>
-    <div id="popupWindow" class="popupWindow">
+<div id="popupWindow" class="popupWindow">
     <span class="close">&times;</span>
     <div class="create_album">
-        <h3>Create Album</h3>
+        <h3>Create Playlist</h3>
         <form method='post'>
-            <label for='album_name'>Album Name:</label>
+            <label for='album_name'>Playlist Name:</label>
             <input type='text' id='album_name' name='album_name' required><br><br>
             <input type='submit' name='create_album' value='Create Album'>
         </form>
@@ -325,7 +325,7 @@ function saveDatabase($database)
     <div class="add_song">
         <h2>Add to Playlist</h2>
         <form method="post">
-            <label for="album">Select Ablum:</label>
+            <label for="album">Select Playlist:</label>
             <select id="album" name="album">
                 <?php foreach ($database[$username]['albums'] as $albumName => $playlist): ?>
                     <option value="<?php echo $albumName; ?>"><?php echo $albumName; ?></option>

@@ -37,12 +37,12 @@ function acceptSong() {
     .then(data => {
         if (data.success) {
             var downloadArea = document.getElementById('downloadArea');
-            downloadArea.innerHTML = '<h3>好友分享的歌曲</h3>';
+            downloadArea.innerHTML = '<h3>Sharing with your</h3>';
 
             data.songs.forEach(function(song) {
                 var listItem = document.createElement('div');
                 listItem.innerHTML = song.title + 
-                    ' <button onclick="downloadSong(\'' + song.path + '\', \'' + song.title + '\', \'' + song.thumbnail + '\')">下载</button>' + 
+                    ' <button onclick="downloadSong(\'' + song.path + '\', \'' + song.title + '\', \'' + song.thumbnail + '\')">Download</button>' + 
                     (song.thumbnail ? '<br><img src="' + song.thumbnail + '" alt="Thumbnail" style="width: 100px; height: 100px;">' : '');
                 downloadArea.appendChild(listItem);
             });
