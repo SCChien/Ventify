@@ -28,13 +28,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const confirmPassword = confirmPasswordInput.value;
 
         if (password.length < 6) {
-            alert("密码不能少于6位字符。");
+            alert("Password length cannot less then 6 digit.");
             event.preventDefault();
             return;
         }
 
         if (password !== confirmPassword) {
-            alert("密码和确认密码不匹配。");
+            alert("Password and confirm password didnot match");
             event.preventDefault();
         }
     });

@@ -16,9 +16,9 @@ function generateToken() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('分享Token: ' + data.token);
+            alert('Token: ' + data.token);
         } else {
-            alert('生成Token时出错: ' + data.error);
+            alert('Error generate token: ' + data.error);
         }
     });
 }
@@ -47,7 +47,7 @@ function acceptSong() {
                 downloadArea.appendChild(listItem);
             });
         } else {
-            alert('接受歌曲时出错: ' + data.error);
+            alert('Error received song : ' + data.error);
         }
     });
 }
@@ -63,9 +63,9 @@ function downloadSong(songPath, songTitle, thumbnailPath) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('歌曲已成功下载到您的目录中');
+            alert('The song has been successfully downloaded');
         } else {
-            alert('下载歌曲时出错: ' + data.error);
+            alert('Error while downloading songs : ' + data.error);
         }
     });
 }
