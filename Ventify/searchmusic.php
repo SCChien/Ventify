@@ -87,8 +87,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'download' && isset($_GET['url'
             // 重定向回主页面，带上下载的文件和封面信息
             header("Location: searchmusic.php?new_song=$safe_title&thumbnail=" . urlencode($thumbnail_path));
             exit();
-        } else {
-            echo "Download failed,please try again。";
         }
     } else {
         // 文件已存在，直接获取封面文件

@@ -326,18 +326,18 @@ $conn->close();
             <!-- Add New Admin -->
             <h2>Add New Admin</h2>
             <?php if ($_SESSION["username"] === "venti") : ?>
-                <form method="POST" action="">
+                <form method="POST" action="" >
                     <div class="form-group">
                         <label for="new_admin_username">Username:</label>
-                        <input type="text" class="form-control" name="new_admin_username" required>
+                        <input type="text" class="form-control" name="new_admin_username" required  style="color:white !important">
                     </div>
                     <div class="form-group">
                         <label for="new_admin_password">Password:</label>
-                        <input type="password" class="form-control" name="new_admin_password" required>
+                        <input type="password" class="form-control" name="new_admin_password" required style="color:white !important">
                     </div>
                     <div class="form-group">
                         <label for="new_admin_email">Email:</label>
-                        <input type="email" class="form-control" name="new_admin_email" required>
+                        <input type="email" class="form-control" name="new_admin_email" required style="color:white !important">
                     </div>
                     <button class="btn btn-primary btn-submit" type="submit" name="add_admin">Add Admin</button>
                 </form>

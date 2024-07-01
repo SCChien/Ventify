@@ -1,0 +1,14 @@
+{
+    "kelvin": {
+        "username": "kelvin",
+        "albums": {
+            "favourite": [
+                {
+                    "song": "MMU Official Song - Permata Dunia ｜ 2023 v1",
+                    "thumbnail": "downloads\/kelvin\/MMU Official Song - Permata Dunia ｜ 2023 v1.webp"
+                }
+            ],
+            "test": []
+        }
+    }
+}

@@ -245,7 +245,7 @@ function saveDatabase($database)
         <ul class="ft_right">
             <li class="iconfont icon-yinliangkai _voice"></li>
             <li class="iconfont icon-yiqipindan" onclick="showSharePopup()"></li>
-            <li class="iconfont icon-24gl-playlistMusic" id="showDownloads"></li>
+            <!-- <li class="iconfont icon-24gl-playlistMusic" id="showDownloads"></li> -->
             <div id="downloadList">
                 <button class="close-btn">关闭</button>
                 <h2>Downloaded Songs</h2>

@@ -196,3 +196,30 @@ window.onload = function () {
     // 设置歌曲结束时播放下一首
     audio.onended = playNextSong;
 };
+
+// 获取推荐歌曲  切歌功能
+const image = document.querySelector('._img')
+const recm_list = document.querySelectorAll('.recm_list ul li')
+const audio_list = ['4', 'Call your name', 'wanjiang', 'lo1', '3']
+const image_list = ['silasila', 'callYourName', 'bocchi', 'smadick', 'aaaaaa']
+// ftleft 切哥后对应的图片歌名和歌手名称也需要切换
+const songName = document.querySelector('.songName')
+const singer = document.querySelector('.singer')
+const songAndSinger_list = [
+    ['夜に駆ける','YOASOBI'],
+    ['Call your name','李阿亚'],
+    ['万疆','李玉刚'],
+    ['アムリタ','牧野由依'],
+    ['群青','YOASOBI']
+]
+
+for (let i = 0; i < recm_list.length; i++) {
+    recm_list[i].addEventListener('click', function() {
+        audio.src = "./audio/" + audio_list[i] + ".mp3"
+        image.src = "./image/main/" + image_list[i] + ".jpg"
+        songName.innerHTML = songAndSinger_list[i][0]
+        singer.innerHTML = songAndSinger_list[i][1]
+        changeSong()
+        audio.play()
+    })
+}
