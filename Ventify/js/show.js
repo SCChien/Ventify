@@ -69,7 +69,7 @@ function playSong(path, title, thumbnail) {
 
     audio.src = path;
     audio.play();
-    songName.innerHTML = title + '<i class="iconfont icon-aixin"></i>';
+    songName.innerHTML = title;
     singer.innerHTML = ''; // 你可以根据需要设置歌手信息
     image.src = thumbnail;
 

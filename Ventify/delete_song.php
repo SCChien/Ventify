@@ -7,7 +7,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 $username = $_SESSION['username'];
-$jsonData = file_get_contents('album.json');
+$jsonData = file_get_contents('./sql/album.json');
 $database = json_decode($jsonData, true, 512, JSON_UNESCAPED_UNICODE);
 
 if (isset($_POST['album'], $_POST['index']) && isset($database[$username]['albums'][$_POST['album']])) {
@@ -34,7 +34,7 @@ if (isset($_POST['album'], $_POST['index']) && isset($database[$username]['album
             unset($database[$username]['albums'][$albumName]);
         }
 
-        file_put_contents('album.json', json_encode($database, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        file_put_contents('./sql/album.json', json_encode($database, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         echo json_encode(['success' => true]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Song not found']);

@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $confirm_password = $_POST['confirm_password'];
 
         if (strlen($new_password) < 6) {
-            $message = "密码不能少于6位字符。";
+            $message = "Password length cannot less that 6 digit";
         } elseif ($new_password !== $confirm_password) {
             $message = "Passwords do not match";
         } else {

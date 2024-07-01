@@ -14,7 +14,7 @@ if (empty($albumName)) {
     exit();
 }
 
-$jsonData = file_get_contents('album.json');
+$jsonData = file_get_contents('./sql/album.json');
 $database = json_decode($jsonData, true, 512, JSON_UNESCAPED_UNICODE);
 
 if (deleteAlbum($username, $albumName, $database)) {
@@ -37,7 +37,7 @@ function deleteAlbum($username, $albumName, &$database)
 function saveDatabase($database)
 {
     $jsonData = json_encode($database, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    file_put_contents('album.json', $jsonData);
+    file_put_contents('./sql/album.json', $jsonData);
 }
 ?>
 

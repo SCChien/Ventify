@@ -10,5 +10,11 @@
             ],
             "test": []
         }
+    },
+    "darren": {
+        "username": "darren",
+        "albums": {
+            "favourite": []
+        }
     }
 }
