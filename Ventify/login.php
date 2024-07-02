@@ -15,7 +15,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $telephone = $_POST["telephone"];
         $email = $_POST["email"];
 
-        if (strlen($reg_password) < 6) {
+        if ($reg_password !== $confirm_password) {
+            $error_message = "Passwords do not match.";
+        } elseif (strlen($reg_password) < 6) {
             $error_message = "Passwords cannot be less than 6 characters.";
         } else {
             // Hash the password before storing
@@ -82,14 +84,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $error_message = "Invalid username or password";
                 }
             } else {
-                // Check credentials using the database for admins
                 $admin_query = "SELECT * FROM admin WHERE username = '$username'";
                 $admin_result = $conn->query($admin_query);
-                
+                // Check credentials using the database for admins
                 if ($admin_result->num_rows > 0) {
                     $admin = $admin_result->fetch_assoc();
                     // Verify the hashed password
-                    if (password_verify($password, $admin['password'])) {
+                    if (password_verify($password, $admin['password']) && $admin['status'] == 1) {
                         // Start a session and store the username
                         $_SESSION["username"] = $username;
 
@@ -100,7 +101,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         exit(); // Ensure that script execution stops after redirection
                     } else {
                         // Display an error message for invalid credentials
-                        $error_message = "Invalid username or password for admin";
+                        if($admin['status'] != 1) {
+                            echo"<script>alert('This admin account already unactive. Please contact with superadmin'); window.location.href = 'login.php';</script>";
+                            
+                        }else {
+                            $error_message = "Invalid username or password for admin";
+                        }
+                        
                     }
                 } else {
                     $error_message = "Invalid username or password";
