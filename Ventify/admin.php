@@ -106,6 +106,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_plan"])) {
     }
 }
 
+// Handle the form submission to update the status of the selected admin account
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["disable_admin"])) {
+    // Check if current user is superadmin
+    if ($_SESSION["username"] === "venti") {
+        // Ensure admin_username and admin_status are set
+        if(isset($_POST["admin_username"]) && isset($_POST["admin_status"])){
+            $admin_username = $_POST["admin_username"];
+            $admin_status = $_POST["admin_status"];
+
+            // Prepare the update query
+            $update_status_query = "UPDATE admin SET status = ? WHERE username = ?";
+            
+            // Prepare and bind parameters
+            $stmt = $conn->prepare($update_status_query);
+            $stmt->bind_param("is", $admin_status, $admin_username);
+
+            // Execute the update query
+            if ($stmt->execute()) {
+                // Set success message
+                echo"<script>alert('Admin status have been updated'); window.location.href = 'admin.php';</script>";
+            } else {
+                // Display error message for database error
+                $error_message = "Error updating admin account status: " . $stmt->error;
+            }
+
+            // Close statement
+            $stmt->close();
+        } else {
+            // Display error message if admin_username or admin_status is not set
+            $error_message = "Admin username or status not provided.";
+        }
+    } else {
+        // Display error message for non-superadmin users trying to disable admin accounts
+        $error_message = "Only superadmin can disable admin accounts.";
+    }
+}
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["edit_plan"])) {
     $plan_id = $_POST["plan_id"];
