@@ -12,3 +12,14 @@ $(document).ready(function () {
     // 显示默认的页面 仪表盘
     $('#dashboard').show();
 })
+
+function validateForm() {
+    const duration = document.querySelector('input[name="plan_duration"]').value;
+    const price = document.querySelector('input[name="plan_price"]').value;
+
+    if (duration < 0 || price < 0) {
+        alert('Duration and price must be non-negative.');
+        return false;
+    }
+    return true;
+}

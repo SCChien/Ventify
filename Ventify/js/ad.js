@@ -62,7 +62,7 @@ function startAdInterval() {
         }
     }
 
-    let adInterval = setInterval(playAd, 300000); // 300000 毫秒 = 5 分钟
+    let adInterval = setInterval(playAd, 30000); // 300000 毫秒 = 5 分钟
 
     adAudio.addEventListener('ended', function() {
         // 广告播放完毕后继续播放歌曲
@@ -71,6 +71,6 @@ function startAdInterval() {
 
         // 重启定时器，每5分钟再次播放广告
         clearInterval(adInterval);
-        adInterval = setInterval(playAd, 300000);
+        adInterval = setInterval(playAd, 30000);
     });
 }

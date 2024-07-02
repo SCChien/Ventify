@@ -95,51 +95,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_plan"])) {
     $plan_duration = $_POST["plan_duration"];
     $plan_price = $_POST["plan_price"];
 
-    $insert_plan_query = "INSERT INTO plans (title, description, duration, price) VALUES ('$plan_title', '$plan_description', '$plan_duration', '$plan_price')";
-
-    if ($conn->query($insert_plan_query) === TRUE) {
-        // 使用重定向来防止重复提交
-        header("Location: admin.php?status=success");
-        exit();
+    // Back-end validation for negative values
+    if ($plan_duration < 0 || $plan_price < 0) {
+        $error_message = "Duration and price must be non-negative.";
     } else {
-        $error_message = "Error: " . $conn->error;
-    }
-}
+        $insert_plan_query = "INSERT INTO plans (title, description, duration, price) VALUES ('$plan_title', '$plan_description', '$plan_duration', '$plan_price')";
 
-// Handle the form submission to update the status of the selected admin account
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["disable_admin"])) {
-    // Check if current user is superadmin
-    if ($_SESSION["username"] === "venti") {
-        // Ensure admin_username and admin_status are set
-        if(isset($_POST["admin_username"]) && isset($_POST["admin_status"])){
-            $admin_username = $_POST["admin_username"];
-            $admin_status = $_POST["admin_status"];
-
-            // Prepare the update query
-            $update_status_query = "UPDATE admin SET status = ? WHERE username = ?";
-            
-            // Prepare and bind parameters
-            $stmt = $conn->prepare($update_status_query);
-            $stmt->bind_param("is", $admin_status, $admin_username);
-
-            // Execute the update query
-            if ($stmt->execute()) {
-                // Set success message
-                echo"<script>alert('Admin status have been updated'); window.location.href = 'admin.php';</script>";
-            } else {
-                // Display error message for database error
-                $error_message = "Error updating admin account status: " . $stmt->error;
-            }
-
-            // Close statement
-            $stmt->close();
+        if ($conn->query($insert_plan_query) === TRUE) {
+            // 使用重定向来防止重复提交
+            header("Location: admin.php?status=success");
+            exit();
         } else {
-            // Display error message if admin_username or admin_status is not set
-            $error_message = "Admin username or status not provided.";
+            $error_message = "Error: " . $conn->error;
         }
-    } else {
-        // Display error message for non-superadmin users trying to disable admin accounts
-        $error_message = "Only superadmin can disable admin accounts.";
     }
 }
 
@@ -182,6 +150,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_plan"])) {
         } else {
             $error_message = "Error: " . $e->getMessage();
         }
+    }
+}
+
+// Handle the form submission to update the status of the selected admin account
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["disable_admin"])) {
+    // Check if current user is superadmin
+    if ($_SESSION["username"] === "venti") {
+        // Ensure admin_username and admin_status are set
+        if(isset($_POST["admin_username"]) && isset($_POST["admin_status"])){
+            $admin_username = $_POST["admin_username"];
+            $admin_status = $_POST["admin_status"];
+
+            // Prepare the update query
+            $update_status_query = "UPDATE admin SET status = ? WHERE username = ?";
+            
+            // Prepare and bind parameters
+            $stmt = $conn->prepare($update_status_query);
+            $stmt->bind_param("is", $admin_status, $admin_username);
+
+            // Execute the update query
+            if ($stmt->execute()) {
+                // Set success message
+                echo"<script>alert('Admin status have been updated'); window.location.href = 'admin.php';</script>";
+            } else {
+                // Display error message for database error
+                $error_message = "Error updating admin account status: " . $stmt->error;
+            }
+
+            // Close statement
+            $stmt->close();
+        } else {
+            // Display error message if admin_username or admin_status is not set
+            $error_message = "Admin username or status not provided.";
+        }
+    } else {
+        // Display error message for non-superadmin users trying to disable admin accounts
+        $error_message = "Only superadmin can disable admin accounts.";
     }
 }
 
@@ -363,10 +368,10 @@ $conn->close();
             <!-- Add New Admin -->
             <h2>Add New Admin</h2>
             <?php if ($_SESSION["username"] === "venti") : ?>
-                <form method="POST" action="" >
-                    <div class="form-group">
+                <form method="POST" action="">
+                    <div class="form-group" >
                         <label for="new_admin_username">Username:</label>
-                        <input type="text" class="form-control" name="new_admin_username" required  style="color:white !important">
+                        <input type="text" class="form-control" name="new_admin_username" required style="color:white !important">
                     </div>
                     <div class="form-group">
                         <label for="new_admin_password">Password:</label>
@@ -488,17 +493,17 @@ $conn->close();
 
          <!-- Add Plan Form -->
          <h1>Add New Plan</h1>
-                <form method="POST" action="" class="add-plan-form">
-                    <label for="plan_title">Title:</label>
-                    <input type="text" name="plan_title" required><br>
-                    <label for="plan_description">Description:</label>
-                    <textarea name="plan_description" required></textarea><br>
-                    <label for="plan_duration">Duration (days):</label>
-                    <input type="number" name="plan_duration" required><br>
-                    <label for="plan_price">Price:</label>
-                    <input type="text" name="plan_price" required><br>
-                    <input type="submit" name="add_plan" value="Add Plan">
-                </form>
+         <form method="POST" action="" class="add-plan-form" onsubmit="return validateForm()">
+            <label for="plan_title">Title:</label>
+            <input type="text" name="plan_title" required><br>
+            <label for="plan_description">Description:</label>
+            <textarea name="plan_description" required></textarea><br>
+            <label for="plan_duration">Duration (days):</label>
+            <input type="number" name="plan_duration" required><br>
+            <label for="plan_price">Price:</label>
+            <input type="number" name="plan_price" required><br>
+            <input type="submit" name="add_plan" value="Add Plan">
+        </form>
 
             </div>
             

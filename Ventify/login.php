@@ -8,10 +8,11 @@ $success_message = "";
 $error_message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST["reg_username"]) && isset($_POST["reg_password"]) && isset($_POST["telephone"]) && isset($_POST["email"])) {
+    if (isset($_POST["reg_username"]) && isset($_POST["reg_password"]) && isset($_POST["confirm_password"]) && isset($_POST["telephone"]) && isset($_POST["email"])) {
         // Registration process
         $reg_username = $_POST["reg_username"];
         $reg_password = $_POST["reg_password"];
+        $confirm_password = $_POST["confirm_password"];
         $telephone = $_POST["telephone"];
         $email = $_POST["email"];
 
@@ -134,10 +135,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="back">
     <h3></h3>
 </div>
-<div class="container" >
+<div class="container">
         <div class="register-box">
             <h2 class="register-title">
-                <span>No Have,Go</span>Register
+                <span>No Have, Go</span> Register
             </h2>
             <?php
             if (!empty($success_message) && isset($_POST["reg_username"])) {
@@ -146,21 +147,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "<p style='color: red;'>$error_message</p>";
             }
             ?>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <div class="input-box">
-                <input type="text" id="reg_username" name="reg_username" required placeholder="Username">
-                <input type="text" id="telephone" name="telephone" required placeholder="Telephone">
-                <input type="text" id="email" name="email" required placeholder="Email">
-                <input type="password" id="reg_password" name="reg_password" required placeholder="Password">
-                <input type="password" placeholder="Confirm Password">
-            </div>
-            <button type="submit" value="Register">Register</button>
+            <form id="registerForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                <div class="input-box">
+                    <input type="text" id="reg_username" name="reg_username" required placeholder="Username">
+                    <input type="text" id="telephone" name="telephone" required placeholder="Telephone">
+                    <input type="text" id="email" name="email" required placeholder="Email">
+                    <input type="password" id="reg_password" name="reg_password" required placeholder="Password">
+                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm Password">
+                </div>
+                <button type="submit" value="Register">Register</button>
             </form>
         </div>
         <div class="login-box slide-up">
             <div class="center">
                 <h2 class="login-title">
-                    <span>Already Have Account?</span>Login
+                    <span>Already Have Account?</span> Login
                 </h2>
                 <?php
                 if (!empty($success_message) && isset($_POST["username"])) {
@@ -175,16 +176,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="password" id="password" name="password" required placeholder="Password">
                     </div>
                     <button type="submit" value="Login">Login</button>
-                    <p><a href ="email.php">Forget Password?</a></p>
+                    <p><a href="email.php">Forget Password?</a></p>
                 </form>
             </div>
         </div>
     </div>
     <div>
-    <a href="index.html">
-    <p>
-    </a>
+        <a href="index.html"></a>
     </div>
     <script src="./js/login.js"></script>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            var password = document.getElementById('reg_password').value;
+            var confirmPassword = document.getElementById('confirm_password').value;
+            if (password !== confirmPassword) {
+                event.preventDefault();
+                alert('Passwords do not match.');
+            }
+        });
+    </script>
 </body>
 </html>
